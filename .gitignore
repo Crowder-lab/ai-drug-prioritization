@@ -1,3 +1,5 @@
-.DS_Store
 *.png
 *.pdf
+*.xml
+api_key.txt
+*/archive/*
