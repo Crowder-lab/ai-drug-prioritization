@@ -4,6 +4,7 @@
 *.xml
 api_key.txt
 */archive/*
+*/data/*
 literature/mapk8ip3
 
 # python
