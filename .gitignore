@@ -1,6 +1,10 @@
-*.png
+*.jpg
 *.pdf
+*.png
 *.xml
 api_key.txt
 */archive/*
 literature/mapk8ip3
+
+# python
+.venv/
