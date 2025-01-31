@@ -1,12 +1,15 @@
+#!/usr/bin/env uv run
 # /// script
-# requires-python = ">=3.13"
+# requires-python = ">=3.10"
 # dependencies = [
+#     "cmocean",
 #     "matplotlib",
 #     "numpy",
 # ]
 # ///
 import math
 
+import cmocean
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -64,7 +67,7 @@ if __name__ == "__main__":
     )
     NUM_POINTS = len(NAMES)
     LINEAR_POINTS = np.linspace(0.3, 0.7, num=NUM_POINTS)
-    CMAP = plt.get_cmap("gist_earth")
+    CMAP = cmocean.cm.ice
     RGB_VALS = CMAP(LINEAR_POINTS, bytes=True)
 
     locations = circle_locations(NUM_POINTS, SCALE)
