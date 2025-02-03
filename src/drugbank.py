@@ -11,44 +11,87 @@ def load_drug_list(filename: str) -> pl.DataFrame:
     return drug_list
 
 
-def find_drugbank_matches(filename: str, generic_queries: pl.Series, brand_queries: pl.Series) -> list[ET.Element]:
-    generic_queries = generic_queries.str.to_lowercase()
-    brand_queries = brand_queries.str.to_lowercase()
+def find_drugbank_matches(filename: str, drug_list: pl.DataFrame) -> pl.DataFrame:
+    generic_queries = drug_list["Generic Name"].str.to_lowercase()
+    brand_queries = drug_list["Brand Name"].str.to_lowercase()
 
-    matches = []
     namespaces = {"": "http://www.drugbank.ca"}
+    drugbank_generic_column = "DrugBank Generic Names"
+    drugbank_brand_column = "DrugBank Brand Names"
 
+    list_with_matches = drug_list.with_columns(
+        [
+            pl.lit([]).cast(pl.List(str)).alias(drugbank_generic_column),
+            pl.lit([]).cast(pl.List(str)).alias(drugbank_brand_column),
+        ]
+    )
     for _, element in tqdm(ET.iterparse(filename, ["end"])):
-        if element.tag[24:] == "drug":
-            # find all possible names for this drug
-            generic_names = [name.text.lower()] if (name := element.find("name", namespaces)) is not None else []
-            if (synonyms := element.find("synonyms", namespaces)) is not None:
-                for synonym in synonyms.iter():
-                    if synonym is not None and synonym.text is not None:
-                        generic_names.append(synonym.text.lower())
-            if generic_queries.is_in(generic_names).any():
-                matches.append(element)
+        if element.tag[24:] == "drug":  # ignore the namespace
+            generic_names = set()
+            brand_names = set()
+            # main name
+            maybe_name = element.find("name", namespaces)
+            if maybe_name is not None:
+                generic_names.add(maybe_name.text.lower())
+            # generic names
+            maybe_synonyms = element.find("synonyms", namespaces)
+            if maybe_synonyms is not None:
+                for maybe_synonym in maybe_synonyms.iter():
+                    if maybe_synonym is not None and maybe_synonym.text is not None:
+                        generic_names.add(maybe_synonym.text.lower())
+            # brand names
+            maybe_products = element.find("products", namespaces)
+            if maybe_products is not None:
+                for maybe_product in maybe_products.iter():
+                    maybe_brand_name = maybe_product.find("name", namespaces)
+                    if maybe_brand_name is not None:
+                        brand_names.add(maybe_brand_name.text.lower())
+
+            # make sure this is a match before doing more work
+            matches = generic_queries.is_in(generic_names) | brand_queries.is_in(brand_names)
+            if not matches.any():
                 continue
 
-            if (products := element.find("products", namespaces)) is not None:
-                brand_names = []
-                for product in products.iter():
-                    if (name := product.find("name", namespaces)) is not None:
-                        brand_names.append(name.text.lower())
-                if brand_queries.is_in(brand_names).any():
-                    matches.append(element)
+            # filter matches and match types
+            generic_names = list(filter(lambda s: "\n" not in s, generic_names))
+            brand_names = list(brand_names)
 
-    return matches
+            # fda approval
+            maybe_groups = element.find("groups", namespaces)
+            is_approved = None
+            if maybe_groups is not None:
+                is_approved = "approved" in tuple(maybe_groups.itertext())
+
+            # indication
+            maybe_indication = element.find("indication", namespaces)
+            indication = maybe_indication.text if maybe_indication is not None else None
+
+            # mechanism
+            maybe_mechanism = element.find("mechanism-of-action", namespaces)
+            mechanism = maybe_mechanism.text if maybe_mechanism is not None else None
+
+            list_with_matches = list_with_matches.with_columns(
+                [
+                    pl.when(matches)
+                    .then(generic_names)
+                    .otherwise(drugbank_generic_column)
+                    .alias(drugbank_generic_column),
+                    pl.when(matches).then(brand_names).otherwise(drugbank_brand_column).alias(drugbank_brand_column),
+                    pl.when(matches).then(is_approved).otherwise("FDA Approved").alias("FDA Approved"),
+                    pl.when(matches)
+                    .then(pl.lit(indication))  # need lit because string value interpreted as column name
+                    .otherwise("Indication")
+                    .alias("Indication"),
+                    pl.when(matches).then(pl.lit(mechanism)).otherwise("Mechanism").alias("Mechanism"),
+                ]
+            )
+
+    return list_with_matches
 
 
 if __name__ == "__main__":
     namespaces = {"": "http://www.drugbank.ca"}
 
     drug_list = load_drug_list("data/drug_list.csv")
-    matches = find_drugbank_matches(
-        "data/drugbank.xml",
-        drug_list["Generic Name"],
-        drug_list["Brand Name"],
-    )
-    for match in matches:
-        print(match.find("name", namespaces).text.lower())
+    matches = find_drugbank_matches("data/drugbank.xml", drug_list)
+    matches.write_json("data/drug_list.json")
