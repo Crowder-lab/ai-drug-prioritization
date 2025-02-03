@@ -1,3 +1,4 @@
+import re
 import xml.etree.ElementTree as ET
 
 import polars as pl
@@ -9,6 +10,15 @@ def load_drug_list(filename: str) -> pl.DataFrame:
         drug_list = pl.read_csv(file)
 
     return drug_list
+
+
+def price_to_dollars_per_mg(description: str, cost: str) -> float | None:
+    amount_expression = re.compile(r"([0-9]+)\s*mg\s*")
+    maybe_mg = amount_expression.search(description)
+    if maybe_mg is None:
+        return None
+    else:
+        return float(cost) / float(maybe_mg.groups()[0])
 
 
 def find_drugbank_matches(filename: str, drug_list: pl.DataFrame) -> pl.DataFrame:
@@ -23,6 +33,7 @@ def find_drugbank_matches(filename: str, drug_list: pl.DataFrame) -> pl.DataFram
         [
             pl.lit([]).cast(pl.List(str)).alias(drugbank_generic_column),
             pl.lit([]).cast(pl.List(str)).alias(drugbank_brand_column),
+            pl.lit([]).cast(pl.List(float)).alias("Price (USD/mg)"),
         ]
     )
     for _, element in tqdm(ET.iterparse(filename, ["end"])):
@@ -70,6 +81,31 @@ def find_drugbank_matches(filename: str, drug_list: pl.DataFrame) -> pl.DataFram
             maybe_mechanism = element.find("mechanism-of-action", namespaces)
             mechanism = maybe_mechanism.text if maybe_mechanism is not None else None
 
+            # price
+            maybe_prices = element.find("prices", namespaces)
+            prices = []
+            if maybe_prices is not None:
+                for price_element in maybe_prices.iterfind("price", namespaces):
+                    description = ""
+                    cost = ""
+                    currency = ""
+                    unit = ""
+                    for price_sub_element in price_element.iter():
+                        if price_sub_element.tag[24:] == "description":
+                            description = price_sub_element.text
+                        elif price_sub_element.tag[24:] == "cost":
+                            currency = price_sub_element.attrib.get("currency")
+                            if currency != "USD":
+                                break
+                            cost = price_sub_element.text
+                        elif price_sub_element[24:] == "unit":
+                            unit = price_sub_element.text
+                            if unit not in ("tablet", "capsule"):
+                                break
+
+                    if (dollars_per_mg := price_to_dollars_per_mg(description, cost)) is not None:
+                        prices.append(dollars_per_mg)
+
             list_with_matches = list_with_matches.with_columns(
                 [
                     pl.when(matches)
@@ -83,6 +119,7 @@ def find_drugbank_matches(filename: str, drug_list: pl.DataFrame) -> pl.DataFram
                     .otherwise("Indication")
                     .alias("Indication"),
                     pl.when(matches).then(pl.lit(mechanism)).otherwise("Mechanism").alias("Mechanism"),
+                    pl.when(matches).then(prices).otherwise("Price (USD/mg)").alias("Price (USD/mg)"),
                 ]
             )
 
