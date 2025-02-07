@@ -9,6 +9,7 @@ literature/mapk8ip3
 
 # python
 .venv/
+__pycache__/
 
 # R
 *.rds

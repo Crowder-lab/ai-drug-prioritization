@@ -1,41 +1,38 @@
-import re
 import xml.etree.ElementTree as ET
 
-import polars as pl
+import catboost as cb
+import pandas as pd
+from numpy.typing import NDArray
 from tqdm import tqdm
 
+import maplight_gnn
 
-def load_drug_list(filename: str) -> pl.DataFrame:
+
+def load_drug_list(filename: str) -> pd.DataFrame:
     with open(filename, "r") as file:
-        drug_list = pl.read_csv(file)
+        drug_list = pd.read_csv(file)
 
     return drug_list
 
 
-def price_to_dollars_per_mg(description: str, cost: str) -> float | None:
-    amount_expression = re.compile(r"([0-9]+)\s*mg\s*")
-    maybe_mg = amount_expression.search(description)
-    if maybe_mg is None:
-        return None
-    else:
-        return float(cost) / float(maybe_mg.groups()[0])
-
-
-def find_drugbank_matches(filename: str, drug_list: pl.DataFrame) -> pl.DataFrame:
-    generic_queries = drug_list["Generic Name"].str.to_lowercase()
-    brand_queries = drug_list["Brand Name"].str.to_lowercase()
+def find_drugbank_matches(filename: str, drug_list: pd.DataFrame) -> pd.DataFrame:
+    generic_queries = drug_list["Generic Name"].str.lower()
+    brand_queries = drug_list["Brand Name"].str.lower()
 
     namespaces = {"": "http://www.drugbank.ca"}
-    drugbank_generic_column = "DrugBank Generic Names"
     drugbank_brand_column = "DrugBank Brand Names"
+    drugbank_generic_column = "DrugBank Generic Names"
+    bioavailability_column = "Bioavailability"
+    price_column = "Price"
+    smiles_column = "SMILES"
 
-    list_with_matches = drug_list.with_columns(
-        [
-            pl.lit([]).cast(pl.List(str)).alias(drugbank_generic_column),
-            pl.lit([]).cast(pl.List(str)).alias(drugbank_brand_column),
-            pl.lit([]).cast(pl.List(float)).alias("Price (USD/mg)"),
-        ]
-    )
+    list_with_matches = drug_list.copy()
+    list_with_matches[drugbank_generic_column] = list_with_matches.apply(lambda _: [], axis=1)
+    list_with_matches[drugbank_brand_column] = list_with_matches.apply(lambda _: [], axis=1)
+    list_with_matches[bioavailability_column] = None
+    list_with_matches[price_column] = list_with_matches.apply(lambda _: [], axis=1)
+    list_with_matches[smiles_column] = None
+
     for _, element in tqdm(ET.iterparse(filename, ["end"])):
         if element.tag[24:] == "drug":  # ignore the namespace
             generic_names = set()
@@ -59,7 +56,7 @@ def find_drugbank_matches(filename: str, drug_list: pl.DataFrame) -> pl.DataFram
                         brand_names.add(maybe_brand_name.text.lower())
 
             # make sure this is a match before doing more work
-            matches = generic_queries.is_in(generic_names) | brand_queries.is_in(brand_names)
+            matches = generic_queries.isin(generic_names) | brand_queries.isin(brand_names)
             if not matches.any():
                 continue
 
@@ -86,49 +83,62 @@ def find_drugbank_matches(filename: str, drug_list: pl.DataFrame) -> pl.DataFram
             prices = []
             if maybe_prices is not None:
                 for price_element in maybe_prices.iterfind("price", namespaces):
-                    description = ""
-                    cost = ""
-                    currency = ""
-                    unit = ""
-                    for price_sub_element in price_element.iter():
-                        if price_sub_element.tag[24:] == "description":
-                            description = price_sub_element.text
-                        elif price_sub_element.tag[24:] == "cost":
-                            currency = price_sub_element.attrib.get("currency")
-                            if currency != "USD":
-                                break
-                            cost = price_sub_element.text
-                        elif price_sub_element[24:] == "unit":
-                            unit = price_sub_element.text
-                            if unit not in ("tablet", "capsule"):
-                                break
+                    maybe_cost = price_element.find("cost", namespaces)
+                    if maybe_cost is not None:
+                        currency = maybe_cost.attrib.get("currency")
+                        cost = maybe_cost.text
+                        prices.append(cost + currency)
 
-                    if (dollars_per_mg := price_to_dollars_per_mg(description, cost)) is not None:
-                        prices.append(dollars_per_mg)
+            # smiles and bioavailability
+            maybe_calculated_properties = element.find("calculated-properties", namespaces)
+            smiles = None
+            bioavailability = None
+            if maybe_calculated_properties is not None:
+                for property in maybe_calculated_properties.iterfind("property", namespaces):
+                    kind = property.findtext("kind", namespaces=namespaces)
+                    if kind == "SMILES":
+                        smiles = property.findtext("value", namespaces=namespaces)
+                    elif kind == "Bioavailability":
+                        bioavailability = int(property.findtext("value", namespaces=namespaces))
 
-            list_with_matches = list_with_matches.with_columns(
-                [
-                    pl.when(matches)
-                    .then(generic_names)
-                    .otherwise(drugbank_generic_column)
-                    .alias(drugbank_generic_column),
-                    pl.when(matches).then(brand_names).otherwise(drugbank_brand_column).alias(drugbank_brand_column),
-                    pl.when(matches).then(is_approved).otherwise("FDA Approved").alias("FDA Approved"),
-                    pl.when(matches)
-                    .then(pl.lit(indication))  # need lit because string value interpreted as column name
-                    .otherwise("Indication")
-                    .alias("Indication"),
-                    pl.when(matches).then(pl.lit(mechanism)).otherwise("Mechanism").alias("Mechanism"),
-                    pl.when(matches).then(prices).otherwise("Price (USD/mg)").alias("Price (USD/mg)"),
-                ]
+            list_with_matches.loc[matches, drugbank_generic_column] = list_with_matches.loc[
+                matches, drugbank_generic_column
+            ].apply(lambda _: generic_names)
+            list_with_matches.loc[matches, drugbank_brand_column] = list_with_matches.loc[
+                matches, drugbank_brand_column
+            ].apply(lambda _: brand_names)
+            list_with_matches.loc[matches, "FDA Approved"] = is_approved
+            list_with_matches.loc[matches, "Indication"] = indication
+            list_with_matches.loc[matches, "Mechanism"] = mechanism
+            list_with_matches.loc[matches, price_column] = list_with_matches.loc[matches, price_column].apply(
+                lambda _: prices
             )
+            list_with_matches.loc[matches, bioavailability_column] = bioavailability
+            list_with_matches.loc[matches, smiles_column] = smiles
 
     return list_with_matches
+
+
+def predict_bbb(model: cb.CatBoostClassifier, smiles: pd.Series) -> NDArray:
+    fingerprints = maplight_gnn.get_fingerprints(smiles)
+    predictions = model.predict_proba(fingerprints)
+    return predictions[:, 1]
 
 
 if __name__ == "__main__":
     namespaces = {"": "http://www.drugbank.ca"}
 
-    drug_list = load_drug_list("data/drug_list.csv")
-    matches = find_drugbank_matches("data/drugbank.xml", drug_list)
-    matches.write_json("data/drug_list.json")
+    drug_list = load_drug_list("data/src/drug_list.csv")
+    matches = find_drugbank_matches("data/src/drugbank.xml", drug_list)
+
+    # matches = pd.read_json("data/drug_list.json", orient="records")
+    smiles_mask = matches["SMILES"].notna()
+    smiles = matches["SMILES"][smiles_mask]
+
+    bbb_model = cb.CatBoostClassifier()
+    bbb_model.load_model("data/src/bbb_martins-0.916-0.002.dump")
+    bbb_data = predict_bbb(bbb_model, smiles)
+    bbb_column = "Crosses Blood Brain Barrier"
+    matches.loc[smiles_mask, bbb_column] = bbb_data
+
+    matches.to_json("data/drug_list.json", orient="records")
