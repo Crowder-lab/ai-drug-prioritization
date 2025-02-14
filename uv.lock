@@ -430,16 +430,48 @@ wheels = [
 [[package]]
 name = "dgl"
 version = "2.2.1"
-source = { url = "https://data.dgl.ai/wheels/dgl-2.2.1-cp310-cp310-macosx_11_0_arm64.whl" }
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform != 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform != 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform != 'darwin'",
+    "python_full_version < '3.11' and sys_platform != 'darwin'",
+]
 dependencies = [
-    { name = "networkx" },
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "psutil" },
-    { name = "requests" },
-    { name = "scipy" },
-    { name = "torchdata" },
-    { name = "tqdm" },
+    { name = "networkx", marker = "sys_platform != 'darwin'" },
+    { name = "numpy", marker = "sys_platform != 'darwin'" },
+    { name = "pandas", marker = "sys_platform != 'darwin'" },
+    { name = "psutil", marker = "sys_platform != 'darwin'" },
+    { name = "requests", marker = "sys_platform != 'darwin'" },
+    { name = "scipy", marker = "sys_platform != 'darwin'" },
+    { name = "torchdata", marker = "sys_platform != 'darwin'" },
+    { name = "tqdm", marker = "sys_platform != 'darwin'" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/52/fc/f01a076131bbe7de3040d5322325b023b8bb840ab25de7cf96eb92f047c5/dgl-2.2.1-cp310-cp310-win_amd64.whl", hash = "sha256:3298cd6a9ad63607975f86c6ddf5eec3ad8108a71e500ba9b40cf1227c1b1dfb", size = 5332859 },
+    { url = "https://files.pythonhosted.org/packages/90/c8/72de38a32f1f95634c5eaabecb4656c6796a9aadfe7764939d8350136e9c/dgl-2.2.1-cp311-cp311-win_amd64.whl", hash = "sha256:343ca8d375a15aa6b50a72314ec11529b9f9467a34c29281c76a4762e6b326fe", size = 5332859 },
+    { url = "https://files.pythonhosted.org/packages/d0/d2/81390f60e50a6c8b4d05cc07beaa66b44c6b130eb3600f6c037e61529025/dgl-2.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:2d3d0a6143688a4e89a9eff348411e778d880feec23d6bd6ac727bc257f95435", size = 5332857 },
+]
+
+[[package]]
+name = "dgl"
+version = "2.2.1"
+source = { url = "https://data.dgl.ai/wheels/dgl-2.2.1-cp310-cp310-macosx_11_0_arm64.whl" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version == '3.11.*' and sys_platform == 'darwin'",
+    "python_full_version < '3.11' and sys_platform == 'darwin'",
+]
+dependencies = [
+    { name = "networkx", marker = "sys_platform == 'darwin'" },
+    { name = "numpy", marker = "sys_platform == 'darwin'" },
+    { name = "pandas", marker = "sys_platform == 'darwin'" },
+    { name = "psutil", marker = "sys_platform == 'darwin'" },
+    { name = "requests", marker = "sys_platform == 'darwin'" },
+    { name = "scipy", marker = "sys_platform == 'darwin'" },
+    { name = "torchdata", marker = "sys_platform == 'darwin'" },
+    { name = "tqdm", marker = "sys_platform == 'darwin'" },
 ]
 wheels = [
     { url = "https://data.dgl.ai/wheels/dgl-2.2.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:43d4e322c1f0da88154e25c03b84c22611d79235e576737b2767024dc5cc9cba" },
@@ -483,12 +515,12 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "catboost" },
-    { name = "dgl" },
+    { name = "dgl", version = "2.2.1", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'darwin'" },
+    { name = "dgl", version = "2.2.1", source = { url = "https://data.dgl.ai/wheels/dgl-2.2.1-cp310-cp310-macosx_11_0_arm64.whl" }, marker = "sys_platform == 'darwin'" },
     { name = "dgllife" },
     { name = "molfeat" },
     { name = "numpy" },
     { name = "pandas" },
-    { name = "polars" },
     { name = "pytdc" },
     { name = "rdkit" },
     { name = "scikit-learn" },
@@ -501,12 +533,12 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "catboost", specifier = ">=1.2.5" },
-    { name = "dgl", url = "https://data.dgl.ai/wheels/dgl-2.2.1-cp310-cp310-macosx_11_0_arm64.whl" },
+    { name = "dgl", marker = "sys_platform != 'darwin'" },
+    { name = "dgl", marker = "sys_platform == 'darwin'", url = "https://data.dgl.ai/wheels/dgl-2.2.1-cp310-cp310-macosx_11_0_arm64.whl" },
     { name = "dgllife", specifier = ">=0.3.2" },
     { name = "molfeat", specifier = ">=0.10.1" },
     { name = "numpy", specifier = "<2" },
     { name = "pandas", specifier = "==2.0.0" },
-    { name = "polars", specifier = ">=1.21.0" },
     { name = "pytdc", specifier = ">=0.4.1" },
     { name = "rdkit", specifier = ">=2024.9.5" },
     { name = "scikit-learn", specifier = ">=1.6.1" },
@@ -1592,20 +1624,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/53/c7/f7b46366f2b86701c8cd441b39bf04b0654071197424459d23551578b7bb/pmapper-1.1.2.tar.gz", hash = "sha256:253335c0e7131745bf84934dc586763ad5c2d5b1b1125445368a577a19722f84", size = 570777 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/84/da/b43a64559a24bade3e30278d682c2dc21e77fc0a181ce2621f1f1bd8dc57/pmapper-1.1.2-py3-none-any.whl", hash = "sha256:ddd600fc4288308011eee49278f09b57b4d5abe13faadb6bf9c0c84330c36416", size = 567446 },
-]
-
-[[package]]
-name = "polars"
-version = "1.21.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/98/49/3733f0a34fd2504264579bad2c66021e175ab548b21767340721e10a1dcf/polars-1.21.0.tar.gz", hash = "sha256:7692d0fe0fb4faac18ef9423de55789e289f4d3f26d42519bd23ef8afb672d62", size = 4323012 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d4/c3/976f0251e96c957143905530b236f1e278b28a8eb5850eab94595bf5d220/polars-1.21.0-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:063f8807f633f8fd15458a43971d930f6ee568b8e95936d7736c9054fc4f6f52", size = 31015281 },
-    { url = "https://files.pythonhosted.org/packages/94/33/c55c19dde172e34dd7a5074a1dcac6472074236131698269db236550283e/polars-1.21.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:519863e0990e3323e7a32fc66bac3ad9da51938a1ffce6c09a92e0b1adb026a5", size = 28033973 },
-    { url = "https://files.pythonhosted.org/packages/da/72/b108cd7e063f03f5b029edbd73ca514291dd3e3d88617965d09df64d71ba/polars-1.21.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bbecddca35c57efde99070517db5d2c63d4c6d0e3c992123ba3be93e86e7bfac", size = 31641844 },
-    { url = "https://files.pythonhosted.org/packages/ac/0a/1df51a9e09fb9974a511eb098e13afed916e8643556799799884f22c7869/polars-1.21.0-cp39-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:d9ce8e6f0d8140e67b0f7c276d22bb5f3345ce7412558643c8b5c270db254b64", size = 29005158 },
-    { url = "https://files.pythonhosted.org/packages/90/4b/f75f0eb9527c943440c6ed90be7e97146a00699fee69f9d5aff577f15659/polars-1.21.0-cp39-abi3-win_amd64.whl", hash = "sha256:c4517abb008af890e4ca8fb6bb0372868381017af0ecadf9d062e2f91f50b276", size = 31729901 },
-    { url = "https://files.pythonhosted.org/packages/e6/a0/d48548f4c9e139b02eacfc074bfd02d98d9bb5f9bf9c03ec5649a481d8ff/polars-1.21.0-cp39-abi3-win_arm64.whl", hash = "sha256:6bb0ba805defb05b76fdca392e48d84d1f16403de5be25d4dd8cdc7fccfd4251", size = 28179572 },
 ]
 
 [[package]]
