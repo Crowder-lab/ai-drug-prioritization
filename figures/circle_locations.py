@@ -10,7 +10,6 @@
 import math
 
 import cmocean
-import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -26,14 +25,9 @@ def circle_locations(num_points: int, scale: float) -> list[tuple[float, float]]
     Scale scales the points locations by that amount.
     """
 
-    angles = [
-        (2 * math.pi * (i + 1) / num_points) + math.pi / 2 for i in range(num_points)
-    ]
+    angles = [(2 * math.pi * (i + 1) / num_points) + math.pi / 2 for i in range(num_points)]
     angles.reverse()
-    points = [
-        (scale * clamp_to_zero(math.cos(angle)), scale * clamp_to_zero(math.sin(angle)))
-        for angle in angles
-    ]
+    points = [(scale * clamp_to_zero(math.cos(angle)), scale * clamp_to_zero(math.sin(angle))) for angle in angles]
     return points
 
 
@@ -66,7 +60,7 @@ if __name__ == "__main__":
         "MAPK8IP3/JIP3 modulators",
     )
     NUM_POINTS = len(NAMES)
-    LINEAR_POINTS = np.linspace(0.3, 0.7, num=NUM_POINTS)
+    LINEAR_POINTS = np.linspace(0.1, 0.85, num=NUM_POINTS)
     CMAP = cmocean.cm.ice
     RGB_VALS = CMAP(LINEAR_POINTS, bytes=True)
 

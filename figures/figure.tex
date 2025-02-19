@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{fontspec}
+\usepackage{geometry}
+\usepackage{tikz}
+
+\geometry{margin=0.25in}
+\setmainfont{Arial}
+
+\begin{document}
+\begin{center}
+\begin{tikzpicture}
+    [circ/.style={circle, draw=black, text=white, minimum size=85pt, text width=65pt, align=center}]
+    \node at (0, 0.4) {\includegraphics[height=160pt]{biorender.png}};
+    \begin{scope}[line width=3pt]
+        \node [circ, fill={rgb,255:red,27; green,26; blue,54}] at (0, 6.0) {\textbf{Symptomatic relief}};
+        \node [circ, fill={rgb,255:red,42; green,41; blue,83}] at (3.243844904733585, 5.047521196987088) {\textbf{Anti-inflammatory reduce oxidative stress}};
+        \node [circ, fill={rgb,255:red,56; green,56; blue,116}] at (5.4577919721271115, 2.4924900780113157) {\textbf{Kinase inhibitors}};
+        \node [circ, fill={rgb,255:red,62; green,73; blue,147}] at (5.938928651285596, -0.8538890296397119) {\textbf{Protein of interest modulator}};
+        \node [circ, fill={rgb,255:red,62; green,93; blue,168}] at (4.534497446125547, -3.929164403671714) {\textbf{Increase dopamine signaling}};
+        \node [circ, fill={rgb,255:red,63; green,115; blue,180}] at (1.6903953410485761, -5.756957841686985) {\textbf{Increase GABA signaling}};
+        \node [circ, fill={rgb,255:red,72; green,135; blue,188}] at (-1.6903953410485784, -5.756957841686984) {\textbf{Increase neuro\-plasticity}};
+        \node [circ, fill={rgb,255:red,88; green,157; blue,195}] at (-4.534497446125551, -3.92916440367171) {\textbf{Immuno\-modulators}};
+        \node [circ, fill={rgb,255:red,106; green,177; blue,203}] at (-5.938928651285597, -0.8538890296397095) {\textbf{Anti\-microbials}};
+        \node [circ, fill={rgb,255:red,131; green,196; blue,211}] at (-5.457791972127111, 2.492490078011318) {\textbf{Neuro\-protectives}};
+        \node [circ, fill={rgb,255:red,163; green,215; blue,220}] at (-3.243844904733586, 5.047521196987087) {\textbf{MAPK8IP3/\\JIP3 modulators}};
+
+    \end{scope}
+\end{tikzpicture}
+\end{center}
+\end{document}
