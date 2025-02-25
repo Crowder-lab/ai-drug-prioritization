@@ -1,6 +1,7 @@
 *.jpg
 *.pdf
 *.png
+*.xlsx
 *.xml
 api_key.txt
 */archive/*

@@ -35,7 +35,8 @@ if __name__ == "__main__":
     SCALE = 6
     NAMES = (
         "Symptomatic relief",
-        "Anti-inflammatory reduce oxidative stress",
+        "Anti-inflammatory",
+        "Reduce oxidative stress",
         "Kinase inhibitors",
         "Protein of interest modulator",
         "Increase dopamine signaling",
@@ -45,19 +46,6 @@ if __name__ == "__main__":
         r"Anti\-microbials",
         r"Neuro\-protectives",
         r"MAPK8IP3/\\JIP3 modulators",
-    )
-    NAMES_SIMPLE = (
-        "Symptomatic relief",
-        "Reduce oxidative stress anti-inflammatory",
-        "Kinase inhibitors",
-        "Protein of interest modulator",
-        "Increase dopamine signaling",
-        "Increase GABA signaling",
-        "Increase neuroplasticity",
-        "Immunomodulators",
-        "Antimicrobials",
-        "Neuroprotectives",
-        "MAPK8IP3/JIP3 modulators",
     )
     NUM_POINTS = len(NAMES)
     LINEAR_POINTS = np.linspace(0.1, 0.85, num=NUM_POINTS)
