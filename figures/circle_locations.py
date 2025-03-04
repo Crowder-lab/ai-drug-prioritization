@@ -53,7 +53,25 @@ if __name__ == "__main__":
     RGB_VALS = CMAP(LINEAR_POINTS, bytes=True)
 
     locations = circle_locations(NUM_POINTS, SCALE)
+    print(r"""\documentclass{article}
+\usepackage{fontspec}
+\usepackage{geometry}
+\usepackage{tikz}
+
+\geometry{margin=0.25in}
+\setmainfont{Arial}
+
+\begin{document}
+\begin{center}
+\begin{tikzpicture}
+    [circ/.style={circle, draw=black, text=white, minimum size=85pt, text width=65pt, align=center}]
+    \node at (0, 0.4) {\includegraphics[height=160pt]{biorender.png}};
+    \begin{scope}[line width=3pt]""")
     for name, location, rgb_val in zip(NAMES, locations, RGB_VALS):
         print(
             f"        \\node [circ, fill={{rgb,255:red,{rgb_val[0]}; green,{rgb_val[1]}; blue,{rgb_val[2]}}}] at {location} {{\\textbf{{{name}}}}};"
         )
+    print(r"""    \end{scope}
+\end{tikzpicture}
+\end{center}
+\end{document}""")

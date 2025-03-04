@@ -14,3 +14,7 @@ __pycache__/
 
 # R
 *.rds
+
+# TeX
+*.log
+*.aux
