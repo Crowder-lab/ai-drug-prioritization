@@ -1,18 +1,24 @@
 map({
   CanonicalName: (."Canonical Name" // ""),
-  CAS: (."CAS Registry Number" // ""),
   DrugLibraryName: (."Drug Library Name" // ""),
+  DrugBankName: (."DrugBank Name" // ""),
+  CAS: (."CAS Registry Number" // ""),
+  UNII: (.UNII // ""),
+  SMILES: (.SMILES // ""),
   HaveIt: (.["Have It"] // ""),
   Screened: (.Screened // ""),
-  NotInDrugBank: (.["Not In DrugBank"] // ""),
-  FDAApproved: (.["FDA Approved"] // ""),
+  RepurposingCategory: (."Repurposing Category" // ""),
+  RepurposingContinued: (."Repurposing Continued" // ""),
   Indication: (.Indication // ""),
   Mechanism: (.Mechanism // ""),
-  DrugBankName: (."DrugBank Name" // ""),
+  BloodBrainBarrier: (."Blood Brain Barrier" // ""),
+  FDAApproved: (.["FDA Approved"] // ""),
   Price: (.Price // [] | join("; ")),
-  SMILES: (.SMILES // ""),
-  UNII: (.UNII // ""),
-  BloodBrainBarrier: (."Blood Brain Barrier" // "")
+  NotInDrugBank: (.["Not In DrugBank"] // ""),
+  RBPediatricSafety: (."RB Case Reports/Pediatric Safety" // ""),
+  RBSideEffects: (."RB Side Effects/Adverse Events" // ""),
+  RBBioavailability: (."RB Bioavailability " // ""),
+  RBLinks: (."RB Links" // "")
 }) 
 | (map(keys) | add | unique) as $cols 
 | ($cols | join(",")) 

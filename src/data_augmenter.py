@@ -1,3 +1,4 @@
+#!/usr/bin/env uv run
 import xml.etree.ElementTree as ET
 from collections.abc import Iterator
 
@@ -146,7 +147,31 @@ class DataAugmenter:
         if self.drug_list is None:
             raise ValueError("drug_list must be loaded first.")
         with open(filename, "w") as file:
-            self.drug_list.to_json(file, orient="records")
+            to_save = self.drug_list[
+                [
+                    "Canonical Name",
+                    "Drug Library Name",
+                    "DrugBank Name",
+                    "CAS Registry Number",
+                    "UNII",
+                    "SMILES",
+                    "Have It",
+                    "Screened",
+                    "Repurposing Category",
+                    "Repurposing Continued",
+                    "Indication",
+                    "Mechanism",
+                    "Blood Brain Barrier",
+                    "FDA Approved",
+                    "Price",
+                    "Not In DrugBank",
+                    "RB Case Reports/Pediatric Safety",
+                    "RB Side Effects/Adverse Events",
+                    "RB Bioavailability ",
+                    "RB Links",
+                ]
+            ]
+            to_save.to_json(file, orient="records")
 
     def match_drugbank(self, filename: str, search_type: str, queries: pd.Series | tuple[pd.Series, pd.Series]) -> None:
         if self.drug_list is None:
@@ -205,7 +230,7 @@ class DataAugmenter:
 if __name__ == "__main__":
     # set up augmenter
     augmenter = (
-        DataAugmenter("data/src/cas_list.csv")
+        DataAugmenter("data/src/drug_list.csv")
         .load_drug_queries()
         .load_admet_model("data/src/bbb_martins-0.916-0.002.dump")
     )
