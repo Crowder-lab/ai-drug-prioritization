@@ -131,16 +131,19 @@ class DataAugmenter:
     def __init__(self, filename: str) -> None:
         self.filename = filename
         self.drug_list = None
-        self.admet_model = None
+        self.admet_models = None
 
     def load_drug_queries(self) -> Self:
         with open(self.filename, "r") as file:
             self.drug_list = pd.read_csv(file)
         return self
 
-    def load_admet_model(self, filename: str) -> Self:
-        self.admet_model = cb.CatBoostClassifier()
-        self.admet_model.load_model(filename)
+    def load_admet_models(self, models: dict[str, str]) -> Self:
+        self.admet_models = {}
+        for name, path in models.items():
+            model = cb.CatBoostClassifier()
+            model.load_model(path)
+            self.admet_models[name] = model
         return self
 
     def save_drug_info(self, filename: str) -> None:
@@ -162,6 +165,8 @@ class DataAugmenter:
                     "Indication",
                     "Mechanism",
                     "Blood Brain Barrier",
+                    "Bioavailability",
+                    "Human Intestinal Absorption",
                     "FDA Approved",
                     "Price",
                     "Not In DrugBank",
@@ -169,6 +174,8 @@ class DataAugmenter:
                     "RB Side Effects/Adverse Events",
                     "RB Bioavailability ",
                     "RB Links",
+                    "ED Side Effect Rank",
+                    "ED Pediatric Safety",
                 ]
             ]
             to_save.to_json(file, orient="records")
@@ -210,21 +217,21 @@ class DataAugmenter:
             self.drug_list.loc[matches, smiles_column] = drugbank.smiles(matching_element)
             self.drug_list.loc[matches, unii_column] = drugbank.unii(matching_element)
 
-    def predict_bbb(self) -> None:
+    def predict_admet(self) -> None:
         if self.drug_list is None:
-            raise ValueError("drug_list is not defined. Call load_drug_queries before predict_bbb.")
-        if self.admet_model is None:
-            raise ValueError("admet_model is not defined. Call load_admet_model before predict_bbb.")
+            raise ValueError("drug_list is not defined. Call load_drug_queries before predict_admet.")
+        if self.admet_models is None:
+            raise ValueError("admet_models is not defined. Call load_admet_models before predict_admet.")
         if "SMILES" not in self.drug_list.columns:
             raise ValueError("SMILES data does not exist yet. Run match_drugbank to create it")
 
         smiles_mask = self.drug_list["SMILES"].notna()
         smiles = self.drug_list["SMILES"][smiles_mask]
-
         fingerprints = maplight_gnn.get_fingerprints(smiles)
-        predictions = self.admet_model.predict_proba(fingerprints)
 
-        self.drug_list.loc[smiles_mask, "Blood Brain Barrier"] = predictions[:, 1]
+        for name, model in self.admet_models.items():
+            predictions = model.predict_proba(fingerprints)
+            self.drug_list.loc[smiles_mask, name] = predictions[:, 1]
 
 
 if __name__ == "__main__":
@@ -232,12 +239,18 @@ if __name__ == "__main__":
     augmenter = (
         DataAugmenter("data/src/drug_list.csv")
         .load_drug_queries()
-        .load_admet_model("data/src/bbb_martins-0.916-0.002.dump")
+        .load_admet_models(
+            {
+                "Blood Brain Barrier": "data/src/bbb_martins-0.916-0.002.dump",
+                "Bioavailability": "data/src/bioavailability_ma-0.74-0.01.dump",
+                "Human Intestinal Absorption": "data/src/hia_hou-0.989-0.001.dump",
+            }
+        )
     )
 
     # get data
     augmenter.match_drugbank("data/src/drugbank.xml", "cas", augmenter.drug_list["CAS Registry Number"])
-    augmenter.predict_bbb()
+    augmenter.predict_admet()
 
     # save it
     augmenter.save_drug_info("data/drug_list.json")
