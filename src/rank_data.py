@@ -1,5 +1,6 @@
 #!/usr/bin/env uv run
 
+import numpy as np
 import pandas as pd
 
 BOLD_TEXT = "\033[1m"
@@ -10,13 +11,13 @@ data["score"] = 0
 
 # NOTE: what if the drug isn't meant for oral route?
 # \infty: is bioavailable
-data = data[(data["Bioavailability"] >= 0.5) | data["SMILES"].isna()]
+data.loc[data["Bioavailability"] < 0.5, "score"] -= np.inf
 
 # \infty: crosses blood brain barrier
-data = data[(data["BloodBrainBarrier"] >= 0.5) | data["SMILES"].isna()]
+data.loc[data["BloodBrainBarrier"] < 0.5, "score"] -= np.inf
 
 # \infty: is absorbed by human intestine
-data = data[(data["HumanIntestinalAbsorption"] >= 0.5) | data["SMILES"].isna()]
+data.loc[data["HumanIntestinalAbsorption"] < 0.5, "score"] -= np.inf
 
 # 1: FDA approved
 data["score"] += data["FDAApproved"].fillna(False)
@@ -65,21 +66,42 @@ CATEGORIES = (
     "protein of interest modulator",
     "symptomatic relief",
 )
-for category in CATEGORIES:
-    unscreened = data[data["Screened"] == False]
-    print(BOLD_TEXT + category.upper() + DEFAULT_TEXT)
-    print(
-        unscreened[unscreened["RepurposingCategory"].str.contains(category)].sort_values(by="score", ascending=False)[
-            [
-                "CanonicalName",
-                "NotInDrugBank",
-                "score",
-                "FDAApproved",
-                "Less than $100",
-                "Less than $1000",
-                "Side Effect Score",
-                "Safety",
-            ]
-        ]
-    )
-    print()
+data.sort_values(by=["score", "RepurposingCategory"], ascending=False)[
+    [
+        "CanonicalName",
+        "score",
+        "RepurposingCategory",
+        "Screened",
+        "HaveIt",
+        "FDAApproved",
+        "Less than $100",
+        "Less than $1000",
+        "Side Effect Score",
+        "Safety",
+        "Bioavailability",
+        "BloodBrainBarrier",
+        "HumanIntestinalAbsorption",
+    ]
+].to_csv("data/ranked.csv")
+
+# for category in CATEGORIES:
+#     unscreened = data[data["Screened"] == False]
+#     print(BOLD_TEXT + category.upper() + DEFAULT_TEXT)
+#     print(
+#         unscreened[unscreened["RepurposingCategory"].str.contains(category)].sort_values(by="score", ascending=False)[
+#             [
+#                 "CanonicalName",
+#                 "score",
+#                 "FDAApproved",
+#                 "Less than $100",
+#                 "Less than $1000",
+#                 "Side Effect Score",
+#                 "Safety",
+#                 "Bioavailability",
+#                 "BloodBrainBarrier",
+#                 "HumanIntestinalAbsorption",
+#             ]
+#         ]
+#
+#     )
+#     print()
