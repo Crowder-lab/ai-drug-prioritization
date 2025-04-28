@@ -241,9 +241,9 @@ if __name__ == "__main__":
         .load_drug_queries()
         .load_admet_models(
             {
-                "Blood Brain Barrier": "data/src/bbb_martins-0.916-0.002.dump",
-                "Bioavailability": "data/src/bioavailability_ma-0.74-0.01.dump",
-                "Human Intestinal Absorption": "data/src/hia_hou-0.989-0.001.dump",
+                "Blood Brain Barrier": "data/admet/bbb_martins-0.916-0.002.dump",
+                "Bioavailability": "data/admet/bioavailability_ma-0.74-0.01.dump",
+                "Human Intestinal Absorption": "data/admet/hia_hou-0.989-0.001.dump",
             }
         )
     )
