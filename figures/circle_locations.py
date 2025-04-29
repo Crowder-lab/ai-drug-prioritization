@@ -34,18 +34,15 @@ def circle_locations(num_points: int, scale: float) -> list[tuple[float, float]]
 if __name__ == "__main__":
     SCALE = 6
     NAMES = (
-        "Symptomatic relief",
-        "Anti-inflammatory",
-        "Reduce oxidative stress",
-        "Kinase inhibitors",
-        "Protein of interest modulator",
-        "Increase dopamine signaling",
-        "Increase GABA signaling",
+        r"Increase neurotransmitter signaling",
+        r"Reduce oxidative stress",
+        r"Anti-inflammatory",
+        r"Neuro\-protectives",
         r"Increase neuro\-plasticity",
+        r"Kinase inhibitors",
         r"Immuno\-modulators",
         r"Anti\-microbials",
-        r"Neuro\-protectives",
-        r"MAPK8IP3/\\JIP3 modulators",
+        r"Symptomatic relief",
     )
     NUM_POINTS = len(NAMES)
     LINEAR_POINTS = np.linspace(0.1, 0.85, num=NUM_POINTS)
@@ -69,7 +66,7 @@ if __name__ == "__main__":
     \begin{scope}[line width=3pt]""")
     for name, location, rgb_val in zip(NAMES, locations, RGB_VALS):
         print(
-            f"        \\node [circ, fill={{rgb,255:red,{rgb_val[0]}; green,{rgb_val[1]}; blue,{rgb_val[2]}}}] at {location} {{\\textbf{{{name}}}}};"
+            fr"        \node [circ, fill={{rgb,255:red,{rgb_val[0]}; green,{rgb_val[1]}; blue,{rgb_val[2]}}}] at {location} {{\textbf{{{name}}}}};"
         )
     print(r"""    \end{scope}
 \end{tikzpicture}
