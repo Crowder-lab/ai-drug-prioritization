@@ -11,10 +11,11 @@ class TranslatorData:
     _drug_categories = [f"biolink:{biolink_cat}" for biolink_cat in ("ChemicalEntity", "Drug", "SmallMolecule")]
     _invalid_id_types = ("CHV:", "MESH:", "MONDO:", "UMLS:")
     _valid_id_mapping = {
-        "CHEBI": "chebi",
-        "CHEMBL.COMPOUND": "chembl",
-        "DRUGBANK": "drugbank",
-        "PUBCHEM.COMPOUND": "pubchem",
+        "CHEBI": "ChEBI",
+        "CHEMBL.COMPOUND": "ChEMBL",
+        "DRUGBANK": "drugbank-id",
+        "PUBCHEM.COMPOUND": "PubChem Compound",
+        "PUBCHEM.SUBSTANCE": "PubChem Substance",
         "UNII": "unii",
     }
 
@@ -68,7 +69,7 @@ class TranslatorData:
 
         # annotate id source more plainly
         df["id_type"] = df["result_id"].str.split(":").str[0].map(self._valid_id_mapping)
-        df["id_type"] = df["id_type"].fillna("inchl")
+        df["id_type"] = df["id_type"].fillna("InChIKey")
 
         return df
 
