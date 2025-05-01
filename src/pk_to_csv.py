@@ -1,3 +1,5 @@
+#!/usr/bin/env uv run
+
 import json
 import re
 import sys
