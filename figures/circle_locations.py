@@ -34,6 +34,7 @@ def circle_locations(num_points: int, scale: float) -> list[tuple[float, float]]
 if __name__ == "__main__":
     SCALE = 6
     NAMES = (
+        r"\textit{MAPK8IP3}/JIP3 modulators",
         r"Increase neurotransmitter signaling",
         r"Reduce oxidative stress",
         r"Anti-inflammatory",
