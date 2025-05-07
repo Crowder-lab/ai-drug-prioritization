@@ -1,4 +1,5 @@
 #!/usr/bin/env uv run
+
 import xml.etree.ElementTree as ET
 from collections.abc import Iterator
 
@@ -13,20 +14,33 @@ import maplight_gnn
 class Drugbank:
     namespaces = {"": "http://www.drugbank.ca"}
 
-    def __init__(self, filename: str, search_type: str, queries: pd.Series | tuple[pd.Series, pd.Series]) -> None:
-        search_functions = {"cas": self.match_cas_number, "name": self.match_names, "unii": self.match_unii}
+    def _equal_if_exists(self):
+        pass
 
+    def __init__(self, filename: str, ids: pd.Series, id_types: pd.Series, names: pd.Series) -> None:
         self.filename = filename
+        self.ids = ids
+        self.id_types = id_types
+        self.names = names
 
-        if search_type in search_functions.keys():
-            self.search_function = search_functions[search_type]
-        else:
-            raise ValueError(f"search_type must be in {search_functions.keys()}")
+    def get_matches(self) -> Iterator[tuple[pd.Series, ET.Element]]:
+        for _, element in tqdm(ET.iterparse(self.filename, ["end"])):
+            # inverted to reduce nesting
+            if element.tag[24:] != "drug":  # ignore the namespace
+                continue
 
-        if search_type == "name" and len(queries) != 2:
-            raise ValueError("Must provide a generic and brand name Series for queries when search_type is 'name'")
-        else:
-            self.queries = queries
+            # check to see if our element matches one of our drugs
+            self.element = element
+            matches = self.check_match()
+            if matches is None or not matches.any():
+                continue
+
+            # matches exist
+            yield matches, element
+
+    def check_match(self) -> pd.Series | None:
+        # check identifiers
+        pass
 
     def match_cas_number(self, element: ET.Element) -> pd.Series | None:
         maybe_cas_number = self.cas_number(element)
@@ -39,20 +53,6 @@ class Drugbank:
     def match_unii(self, element: ET.Element) -> pd.Series | None:
         maybe_unii = self.unii(element)
         return self.queries == maybe_unii if maybe_unii is not None else None
-
-    def get_matches(self) -> Iterator[tuple[pd.Series, ET.Element]]:
-        for _, element in tqdm(ET.iterparse(self.filename, ["end"])):
-            # inverted to reduce nesting
-            if element.tag[24:] != "drug":  # ignore the namespace
-                continue
-
-            # check to see if our element matches one of our drugs
-            matches = self.search_function(element)
-            if matches is None or not matches.any():
-                continue
-
-            # matches exist
-            yield matches, element
 
     def cas_number(self, element: ET.Element) -> str | None:
         maybe_cas_number = element.find("cas-number", self.namespaces)
@@ -134,8 +134,14 @@ class DataAugmenter:
         self.admet_models = None
 
     def load_drug_queries(self) -> Self:
-        with open(self.filename, "r") as file:
-            self.drug_list = pd.read_csv(file)
+        if self.filename.endswith(".csv"):
+            with open(self.filename, "r") as file:
+                self.drug_list = pd.read_csv(file)
+        elif self.filename.endswith(".json"):
+            with open(self.filename, "r") as file:
+                self.drug_list = pd.read_json(file, orient="records")
+        else:
+            raise ValueError("Data file must be .csv or .json")
         return self
 
     def load_admet_models(self, models: dict[str, str]) -> Self:
@@ -150,37 +156,9 @@ class DataAugmenter:
         if self.drug_list is None:
             raise ValueError("drug_list must be loaded first.")
         with open(filename, "w") as file:
-            to_save = self.drug_list[
-                [
-                    "Canonical Name",
-                    "Drug Library Name",
-                    "DrugBank Name",
-                    "CAS Registry Number",
-                    "UNII",
-                    "SMILES",
-                    "Have It",
-                    "Screened",
-                    "Repurposing Category",
-                    "Repurposing Continued",
-                    "Indication",
-                    "Mechanism",
-                    "Blood Brain Barrier",
-                    "Bioavailability",
-                    "Human Intestinal Absorption",
-                    "FDA Approved",
-                    "Price",
-                    "Not In DrugBank",
-                    "RB Case Reports/Pediatric Safety",
-                    "RB Side Effects/Adverse Events",
-                    "RB Bioavailability ",
-                    "RB Links",
-                    "ED Side Effect Rank",
-                    "ED Pediatric Safety",
-                ]
-            ]
-            to_save.to_json(file, orient="records")
+            self.drug_list.to_json(file, orient="records")
 
-    def match_drugbank(self, filename: str, search_type: str, queries: pd.Series | tuple[pd.Series, pd.Series]) -> None:
+    def match_drugbank(self, filename: str, id_col_name: str, id_type_col_name: str, name_col_name: str) -> None:
         if self.drug_list is None:
             raise ValueError("drug_list is not defined. Call load_drug_queries before match_drugbank.")
 
@@ -204,7 +182,9 @@ class DataAugmenter:
         self.drug_list[smiles_column] = None
         self.drug_list[unii_column] = None
 
-        drugbank = Drugbank(filename, search_type, queries)
+        drugbank = Drugbank(
+            filename, self.drug_list[id_col_name], self.drug_list[id_type_col_name], self.drug_list[name_col_name]
+        )
         for matches, matching_element in drugbank.get_matches():
             self.drug_list.loc[matches, cas_column] = drugbank.cas_number(matching_element)
             self.drug_list.loc[matches, fda_column] = drugbank.fda_approval(matching_element)
@@ -237,7 +217,7 @@ class DataAugmenter:
 if __name__ == "__main__":
     # set up augmenter
     augmenter = (
-        DataAugmenter("data/src/drug_list.csv")
+        DataAugmenter("data/translator_drugs.json")
         .load_drug_queries()
         .load_admet_models(
             {
@@ -249,8 +229,8 @@ if __name__ == "__main__":
     )
 
     # get data
-    augmenter.match_drugbank("data/src/drugbank.xml", "cas", augmenter.drug_list["CAS Registry Number"])
+    augmenter.match_drugbank("data/src/drugbank.xml", "result_id", "id_type", "result_name")
     augmenter.predict_admet()
 
     # save it
-    augmenter.save_drug_info("data/drug_list.json")
+    augmenter.save_drug_info("data/translator_drug_list.json")

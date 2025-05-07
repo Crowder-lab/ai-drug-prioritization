@@ -8,6 +8,8 @@ dependencies = [
     "catboost>=1.2.5",
     "dgl",
     "dgllife>=0.3.2",
+    "hy>=1.0.0",
+    "hyrule>=1.0.0",
     "molfeat>=0.10.1",
     "numpy<2",
     "pandas==2.0.0",

@@ -10,7 +10,7 @@ import pandas as pd
 class TranslatorData:
     _drug_categories = [f"biolink:{biolink_cat}" for biolink_cat in ("ChemicalEntity", "Drug", "SmallMolecule")]
     _invalid_id_types = ("CHV:", "MESH:", "MONDO:", "UMLS:")
-    _valid_id_mapping = {
+    _valid_id_to_drugbank = {
         "CHEBI": "ChEBI",
         "CHEMBL.COMPOUND": "ChEMBL",
         "DRUGBANK": "drugbank-id",
@@ -68,8 +68,12 @@ class TranslatorData:
         df = df[~df["result_id"].str.startswith(self._invalid_id_types)]
 
         # annotate id source more plainly
-        df["id_type"] = df["result_id"].str.split(":").str[0].map(self._valid_id_mapping)
+        df["id_type"] = df["result_id"].str.split(":").str[0].map(self._valid_id_to_drugbank)
         df["id_type"] = df["id_type"].fillna("InChIKey")
+
+        # chop off id type
+        needs_id_removal = df["result_id"].str.contains(":", regex=False)
+        df["result_id"][needs_id_removal] = df["result_id"][needs_id_removal].str.split(":").str[1]
 
         return df
 
