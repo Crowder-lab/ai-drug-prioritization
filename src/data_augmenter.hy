@@ -238,6 +238,5 @@
       (.load-admet-models {"Blood Brain Barrier" "data/admet/bbb_martins-0.916-0.002.dump" "Bioavailability" "data/admet/bioavailability_ma-0.74-0.01.dump" "Human Intestinal Absorption" "data/admet/hia_hou-0.989-0.001.dump"})))
   (doto augmenter
     (.match-drugbank "data/src/drugbank.xml" "result_id" "id_type" "result_name")
-    (.save-drug-info "data/translator_drug_list.json")
     (.predict-admet)
     (.save-drug-info "data/translator_drug_list.json")))
