@@ -1,6 +1,6 @@
 #!/usr/bin/env hy
 
-(require hyrule [-> ->> ncut])
+(require hyrule [-> ->> ap-each ncut])
 (import numpy :as np)
 (import pandas :as pd)
 
@@ -16,9 +16,9 @@
 
 ;;; exclude completely for these
 (setv very-large-number 1e9)
-(-= (ncut data.loc (< (get data "Bioavailability") 0.5) "score") very-large-number)
-(-= (ncut data.loc (< (get data "Blood Brain Barrier") 0.5) "score") very-large-number)
-(-= (ncut data.loc (< (get data "Human Intestinal Absorption") 0.5) "score") very-large-number)
+(ap-each 
+  #("Bioavailability" "Blood Brain Barrier" "Human Intestinal Absorption")
+  (-= (ncut data.loc (< (get data it) 0.5) "score") very-large-number))
 
 ;;; 1: FDA approved
 (addcol data "score" (.fillna (get data "FDA Approved") False))
@@ -28,6 +28,8 @@
   (<
     (.apply (get data "Prices")
       (fn [l]
+        (when (isinstance l str)
+          (setv l [l]))
         (when (or (is l None) (= (len l) 0))
           (setv l ["InfUSD"]))
         (->> l
@@ -42,6 +44,8 @@
   (<
     (.apply (get data "Prices")
       (fn [l]
+        (when (isinstance l str)
+          (setv l [l]))
         (when (or (is l None) (= (len l) 0))
           (setv l ["InfUSD"]))
         (->> l
@@ -50,6 +54,14 @@
           (max))))
     1000))
 (addcol data "score" (get data "Less than $1000"))
+
+;;; 0.2: each search term it appeared in
+(addcol data "score"
+  (.apply (get data "search term")
+    (fn [x]
+      (when (isinstance x str)
+        (setv x [x]))
+      (* 0.2 (len x)))))
 
 (with [f (open "data/translator_ranked.csv" "w")]
   (data.to_csv f))
