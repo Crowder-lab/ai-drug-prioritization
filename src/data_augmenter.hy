@@ -187,7 +187,7 @@
     (create-var-column indication-column "Indication" None)
     (create-var-column mechanism-column "Mechanism" None)
     (create-var-column name-column "DrugBank Name" None)
-    (create-var-column price-column "Prices" (@drug-list.apply (fn [_] (list)) :axis 1)) 
+    (create-var-column price-column "Prices" (@drug-list.apply (fn [_] (list)) :axis 1))
     (create-var-column smiles-column "SMILES" None)
     (create-var-column unii-column "UNII" None)
     (setv drugbank (DrugBank filename id-col id-type-col name-col))
@@ -201,6 +201,29 @@
         (.apply (ncut @drug-list.loc matches price-column) (fn [_] (drugbank.prices element)))) ; prices is a list
       (setv (ncut @drug-list.loc matches smiles-column) (drugbank.smiles element))
       (setv (ncut @drug-list.loc matches unii-column) (drugbank.unii element))))
+
+  (meth deduplicate []
+    (when (is @drug-list None)
+      (raise (ValueError "drug-list is not defined. Call load-drug-queries before deduplicate.")))
+    (when (not-in "DrugBank Name" @drug-list.columns)
+      (raise (ValueError "ID data does not exist yet. Run match-drugbank to create it.")))
+    (setv @drug-list
+      (-> @drug-list
+        (.groupby "DrugBank Name")
+        (.agg
+          (fn [x]
+            (setv y [])
+            (for [item x]
+              (if (isinstance item list)
+                (y.extend item)
+                (y.append item)))
+            (setv z (set y))
+            (z.discard None)
+            (cond
+              (= (len z) 0) None
+              (= (len z) 1) (.pop z)
+              True z)))
+        (.reset-index))))
 
   (meth predict-admet []
     (when (is @drug-list None)
@@ -238,5 +261,6 @@
       (.load-admet-models {"Blood Brain Barrier" "data/admet/bbb_martins-0.916-0.002.dump" "Bioavailability" "data/admet/bioavailability_ma-0.74-0.01.dump" "Human Intestinal Absorption" "data/admet/hia_hou-0.989-0.001.dump"})))
   (doto augmenter
     (.match-drugbank "data/src/drugbank.xml" "result_id" "id_type" "result_name")
+    (.deduplicate)
     (.predict-admet)
     (.save-drug-info "data/translator_drug_list.json")))
