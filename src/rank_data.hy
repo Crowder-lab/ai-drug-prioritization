@@ -55,13 +55,29 @@
     1000))
 (addcol data "score" (get data "Less than $1000"))
 
-;;; 0.2: each search term it appeared in
-(addcol data "score"
+;;; sort by score
+(data.sort_values
+  :by "score"
+  :ascending False
+  :inplace True)
+
+;;; separate by search terms
+(setcol data "search term"
   (.apply (get data "search term")
     (fn [x]
-      (when (isinstance x str)
-        (setv x [x]))
-      (* 0.2 (len x)))))
+      (if (isinstance x str)
+        [x]
+        x)))) ; isinstance list
+(setv unique-terms
+  (sfor
+    term-list (get data "search term")
+    term term-list
+    term))
+(for [term unique-terms]
+  (setcol data term
+    (.apply (get data "search term") (fn [l] (in term l)))))
 
-(with [f (open "data/translator_ranked.csv" "w")]
-  (data.to_csv f))
+;;; save
+(for [term unique-terms]
+  (with [f (open f"data/ranked/{term}_ranked.csv" "w")]
+    (.to_csv (get data (get data term)) f)))
