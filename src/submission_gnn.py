@@ -1,3 +1,5 @@
+#!/usr/bin/env uv run
+
 import catboost as cb
 from tdc.benchmark_group import admet_group
 from tqdm import tqdm
