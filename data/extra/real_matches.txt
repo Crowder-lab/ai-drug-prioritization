@@ -1,0 +1,81 @@
+acetylcysteine
+albuterol
+alvocidib
+amantadine
+ambroxol
+amlexanox
+apilimod
+ascorbic acid
+astaxanthin
+at-7519
+baclofen
+baicalein
+benfotiamine
+berberine
+buspirone
+captopril
+carbamazepine
+carbidopa
+cefoperazone
+citalopram
+cysteamine
+dantrolene
+daprodustat
+dasotraline
+decitabine
+dinaciclib
+donepezil
+doxycycline
+escitalopram
+everolimus
+fluvoxamine
+gabapentin enacarbil
+glycyrrhizic acid
+guanfacine
+halofuginone
+hesperidin
+huperzine a
+hydroxychloroquine
+hygromycin b
+istradefylline
+ketoconazole
+leflunomide
+leucovorin
+levocarnitine
+levodopa
+lovastatin
+lumateperone
+luteolin
+melatonin
+metformin
+minocycline
+moclobemide
+netilmicin
+nortriptyline
+omacetaxine mepesuccinate
+omaveloxolone
+phenylbutyric acid
+phenytoin
+pioglitazone
+pramipexole
+pregnenolone
+resveratrol
+ripretinib
+rivastigmine
+romidepsin
+ropinirole
+sertraline
+simvastatin
+sirolimus
+sulindac
+tigecycline
+tiopronin
+tipepidine
+tranilast
+tretinoin
+ubidecarenone
+valsartan
+venlafaxine
+viloxazine
+zandelisib
+zonisamide

@@ -1,0 +1,98 @@
+10-cl-bbo
+amantadine
+ambroxol
+amlexanox
+apilimod
+astaxanthin
+at-7519
+at7519
+baclofen
+baicalein
+benfotiamine
+berberine
+buspirone
+captopril
+carbamazepine
+carbidopa + levodopa
+carnitine
+carotenoids
+cefoperazone
+cephaeline
+citalopram
+coenzyme q10
+cysteamine
+d-penicillamine 
+dantrolene
+daprodustat
+dasotraline
+decitabine
+dibenzoyl thiamine
+dinaciclib
+donepezil
+doxycycline
+escitalopram
+everolimus
+flavopiridol
+fluvoxamine
+gabapentin (hydrochloride)
+gambogic acid
+ginko biloba
+glycyrrhizic acid
+guanfacine
+halofuginone
+hesperidin
+huperzine a
+hydroxychloroquine
+hygromycin b
+istradefylline
+ketoconazole
+leflunomide
+leucovorin
+lovastatin
+lumateperone
+luteolin
+lycorine
+map4343
+melatonin
+metformin
+minocycline
+minocycline
+moclobemide
+netilmicin
+nortriptyline
+omacetaxine mepesuccinate
+omaveloxolone
+oxindole
+phenytoin
+pioglitazone
+pitavistatin
+polyphenols
+pramipexole
+pregnenolone
+purvalanol b
+resveratrol
+retinoic acid
+ripretinib
+rivastigmine
+romidepsin
+ropinirole
+salbutamol
+seliciclib 
+sertraline
+simvastatin
+sirolimus
+sodium phenylbutyrate 
+sulindac
+tigecycline
+tiopronin 
+tipepidine
+tozasertib
+tranilast
+tumeric
+valsartan
+venlafaxine
+viamin e
+viloxazine
+vitamin c
+zandelisib
+zonisamide
