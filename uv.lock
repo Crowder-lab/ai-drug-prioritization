@@ -539,7 +539,7 @@ requires-dist = [
     { name = "dgl", marker = "sys_platform != 'darwin'" },
     { name = "dgl", marker = "sys_platform == 'darwin'", url = "https://data.dgl.ai/wheels/dgl-2.2.1-cp310-cp310-macosx_11_0_arm64.whl" },
     { name = "dgllife", specifier = ">=0.3.2" },
-    { name = "hy", specifier = ">=1.0.0" },
+    { name = "hy", specifier = ">=1.1.0" },
     { name = "hyrule", specifier = ">=1.0.0" },
     { name = "molfeat", specifier = ">=0.10.1" },
     { name = "numpy", specifier = "<2" },
@@ -909,12 +909,12 @@ wheels = [
 
 [[package]]
 name = "hy"
-version = "1.0.0"
+version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "funcparserlib" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ab/7f/f8061ae737f6a564c3d4f80287bd5ff46afc1f606617a9cb5c797e6a974a/hy-1.0.0.tar.gz", hash = "sha256:3a00013e075ff5ce8f5d475ca2be47e4c871f09184ba3533787cb544d32d1f9e", size = 121792, upload-time = "2024-09-22T13:16:58.154Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/eb/4e/30dbda9961e5eec63606c8d2fd08ece12f28244111df05a79adac2b02f37/hy-1.1.0.tar.gz", hash = "sha256:c8943ce306341b4b3edab4142f2c7ca55b43415b0ebf6c0e7969290a6eed2948", size = 120402, upload-time = "2025-05-08T17:53:21.971Z" }
 
 [[package]]
 name = "hyperopt"

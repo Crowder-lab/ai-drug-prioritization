@@ -26,7 +26,8 @@
 
   (meth __init__ [@filename @ids @id-types names]
     (setv @names (.str.lower names))
-    (setv @get-ids {"ChEBI" @chebi
+    (setv @get-ids {"cas-number" @cas-number
+                    "ChEBI" @chebi
                     "ChEMBL" @chembl
                     "drugbank-id" @drugbank
                     "InChIKey" @inchikey
@@ -238,6 +239,7 @@
     (setv molecules (smiles.apply Chem.MolFromSmiles))
     (setv molecules-mask (.notna molecules))
     (setv fingerprints (@get-fingerprints (get molecules molecules-mask)))
+    (print "got fingerprints")
     (setv combined-mask (pd.Series False :index @drug-list.index))
     (setv (ncut combined-mask.loc (. (get smiles molecules-mask) index)) True)
     (for [#(name model) (@admet-models.items)]
@@ -251,16 +253,18 @@
     (fingerprints.append (maplight-gnn.get-erg-fingerprints molecules))
     (fingerprints.append (maplight-gnn.get-rdkit-features molecules))
     (fingerprints.append (maplight-gnn.get-gin-supervised-masking molecules))
+    (print "got gin")
     (np.concatenate fingerprints :axis 1)))
 
 
 (when (= __name__ "__main__")
   (setv augmenter
-    (-> (DataAugmenter "data/translator_drugs.json")
+    (-> (DataAugmenter "data/src/drug_list.csv")
       (.load-drug-queries)
       (.load-admet-models {"Blood Brain Barrier" "data/admet/bbb_martins-0.916-0.002.dump" "Bioavailability" "data/admet/bioavailability_ma-0.74-0.01.dump" "Human Intestinal Absorption" "data/admet/hia_hou-0.989-0.001.dump"})))
+  (setv (get augmenter.drug-list "id_type") "cas-number")
   (doto augmenter
-    (.match-drugbank "data/src/drugbank.xml" "result_id" "id_type" "result_name")
+    (.match-drugbank "data/src/drugbank.xml" "CAS Registry Number" "id_type" "Canonical Name")
     (.deduplicate)
     (.predict-admet)
-    (.save-drug-info "data/translator_drug_list.json")))
+    (.save-drug-info "data/drug_list.json")))

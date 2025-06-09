@@ -1,5 +1,8 @@
 #!/usr/bin/env hy
 
+(import json)
+(import re)
+
 (require hyrule [-> ->> ap-each ncut])
 (import numpy :as np)
 (import pandas :as pd)
@@ -10,8 +13,25 @@
 (defmacro addcol [df col-name add]
   `(+= (get ~df ~col-name) ~add))
 
-(with [f (open "data/translator_drug_list.json" "r")]
+(defn is-safe [chatgpt-output]
+  (setv correct-regexp (re.compile r"<explain>.*</explain>.*<answer>.*</answer>" re.DOTALL))
+  (setv answer-regexp (re.compile r"<answer>(.*)</answer>" re.DOTALL))
+  (if (re.match correct-regexp chatgpt-output)
+    (!= (.find (.lower (get (re.search answer-regexp chatgpt-output) 0)) "yes") -1)
+    False))
+
+(with [f (open "data/src/pubmed_answers.json" "r")]
+  (setv answers (json.load f)))
+(with [f (open "../PubMed-Embedding-Project/drug_names.txt" "r")]
+  (setv drug-names (list (map (fn [s] (cut s None -1)) (.readlines f)))))
+
+(with [f (open "data/drug_list.json" "r")]
   (setv data (pd.read_json f)))
+
+(setcol data "Pediatric Safety" False)
+(for [#(drug-name answer) (zip drug-names answers)]
+  (setv (ncut data.loc (= (get data "Canonical Name") drug-name) "Pediatric Safety") (is-safe (get answer "answer"))))
+
 (setcol data "score" 0)
 
 ;;; exclude completely for these
@@ -26,7 +46,7 @@
 ;;; 1: cost less than $100
 (setcol data "Less than $100"
   (<
-    (.apply (get data "Prices")
+    (.apply (get data "Price")
       (fn [l]
         (when (isinstance l str)
           (setv l [l]))
@@ -42,7 +62,7 @@
 ;;; 1: cost less than $1000
 (setcol data "Less than $1000"
   (<
-    (.apply (get data "Prices")
+    (.apply (get data "Price")
       (fn [l]
         (when (isinstance l str)
           (setv l [l]))
@@ -55,29 +75,14 @@
     1000))
 (addcol data "score" (get data "Less than $1000"))
 
+;;; 1: Safe in children
+(addcol data "score" (get data "Pediatric Safety"))
+
 ;;; sort by score
 (data.sort_values
   :by "score"
   :ascending False
   :inplace True)
 
-;;; separate by search terms
-(setcol data "search term"
-  (.apply (get data "search term")
-    (fn [x]
-      (if (isinstance x str)
-        [x]
-        x)))) ; isinstance list
-(setv unique-terms
-  (sfor
-    term-list (get data "search term")
-    term term-list
-    term))
-(for [term unique-terms]
-  (setcol data term
-    (.apply (get data "search term") (fn [l] (in term l)))))
-
-;;; save
-(for [term unique-terms]
-  (with [f (open f"data/ranked/{term}_ranked.csv" "w")]
-    (.to_csv (get data (get data term)) f)))
+(with [f (open f"data/ranked.csv" "w")]
+  (.to_csv data f))
