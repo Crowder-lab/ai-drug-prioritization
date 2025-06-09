@@ -7,10 +7,9 @@ requires-python = ">=3.10"
 dependencies = [
     "catboost>=1.2.5",
     "dgl",
-    "dgllife>=0.3.2",
     "hy>=1.1.0",
     "hyrule>=1.0.0",
-    "molfeat>=0.10.1",
+    "molfeat[dgl]>=0.11.0",
     "numpy<2",
     "pandas==2.0.0",
     "pytdc>=0.4.1",
@@ -26,4 +25,7 @@ dependencies = [
 line-length = 120
 
 [tool.uv.sources]
-dgl = { url = "https://data.dgl.ai/wheels/dgl-2.2.1-cp310-cp310-macosx_11_0_arm64.whl", marker = "sys_platform == 'darwin'" }
+dgl = [
+    { url = "https://data.dgl.ai/wheels/dgl-2.0.0-cp310-cp310-macosx_11_0_arm64.whl", marker = "sys_platform == 'darwin'" },
+    { url = "https://data.dgl.ai/wheels/dgl-2.0.0-cp310-cp310-manylinux1_x86_64.whl", marker = "sys_platform == 'linux'" },
+]

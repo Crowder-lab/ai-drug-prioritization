@@ -239,7 +239,6 @@
     (setv molecules (smiles.apply Chem.MolFromSmiles))
     (setv molecules-mask (.notna molecules))
     (setv fingerprints (@get-fingerprints (get molecules molecules-mask)))
-    (print "got fingerprints")
     (setv combined-mask (pd.Series False :index @drug-list.index))
     (setv (ncut combined-mask.loc (. (get smiles molecules-mask) index)) True)
     (for [#(name model) (@admet-models.items)]
@@ -253,7 +252,6 @@
     (fingerprints.append (maplight-gnn.get-erg-fingerprints molecules))
     (fingerprints.append (maplight-gnn.get-rdkit-features molecules))
     (fingerprints.append (maplight-gnn.get-gin-supervised-masking molecules))
-    (print "got gin")
     (np.concatenate fingerprints :axis 1)))
 
 
