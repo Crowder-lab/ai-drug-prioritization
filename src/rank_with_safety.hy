@@ -46,7 +46,7 @@
 ;;; 1: cost less than $100
 (setcol data "Less than $100"
   (<
-    (.apply (get data "Price")
+    (.apply (get data "Prices")
       (fn [l]
         (when (isinstance l str)
           (setv l [l]))
@@ -62,7 +62,7 @@
 ;;; 1: cost less than $1000
 (setcol data "Less than $1000"
   (<
-    (.apply (get data "Price")
+    (.apply (get data "Prices")
       (fn [l]
         (when (isinstance l str)
           (setv l [l]))
