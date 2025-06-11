@@ -320,7 +320,6 @@ class DataAugmenter:
         molecules = smiles.apply(Chem.MolFromSmiles)
         molecules_mask = molecules.notna()
         fingerprints = self.get_fingerprints(molecules[molecules_mask])
-        print('got fingerprints')
         combined_mask = pd.Series(False, index=self.drug_list.index)
         combined_mask.loc[smiles[molecules_mask].index] = True
         for (name, model) in self.admet_models.items():
@@ -335,16 +334,15 @@ class DataAugmenter:
         fingerprints.append(maplight_gnn.get_erg_fingerprints(molecules))
         fingerprints.append(maplight_gnn.get_rdkit_features(molecules))
         fingerprints.append(maplight_gnn.get_gin_supervised_masking(molecules))
-        print('got gin')
         return np.concatenate(fingerprints, axis=1)
 if __name__ == '__main__':
-    augmenter = DataAugmenter('data/src/drug_list.csv').load_drug_queries().load_admet_models({'Blood Brain Barrier': 'data/admet/bbb_martins-0.916-0.002.dump', 'Bioavailability': 'data/admet/bioavailability_ma-0.74-0.01.dump', 'Human Intestinal Absorption': 'data/admet/hia_hou-0.989-0.001.dump'})
+    augmenter = DataAugmenter('data/translator_drugs.json').load_drug_queries().load_admet_models({'Blood Brain Barrier': 'data/admet/bbb_martins-0.916-0.002.dump', 'Bioavailability': 'data/admet/bioavailability_ma-0.74-0.01.dump', 'Human Intestinal Absorption': 'data/admet/hia_hou-0.989-0.001.dump'})
     augmenter.drug_list['id_type'] = 'cas-number'
     _hy_gensym_f_1 = augmenter
-    _hy_gensym_f_1.match_drugbank('data/src/drugbank.xml', 'CAS Registry Number', 'id_type', 'Canonical Name')
+    _hy_gensym_f_1.match_drugbank('data/src/drugbank.xml', 'result_id', 'id_type', 'result_name')
     _hy_gensym_f_1.deduplicate()
     _hy_gensym_f_1.predict_admet()
-    _hy_gensym_f_1.save_drug_info('data/drug_list.json')
+    _hy_gensym_f_1.save_drug_info('data/translator_drug_list.json')
     _hy_anon_var_25 = _hy_gensym_f_1
 else:
     _hy_anon_var_25 = None

@@ -8,7 +8,7 @@ import pandas as pd
 
 
 class TranslatorData:
-    _drug_categories = [f"biolink:{biolink_cat}" for biolink_cat in ("ChemicalEntity", "Drug", "SmallMolecule")]
+    _drug_categories = [f"biolink:{biolink_cat}" for biolink_cat in ("Drug", "SmallMolecule")]
     _invalid_id_types = ("CHV:", "MESH:", "MONDO:", "UMLS:")
     _valid_id_to_drugbank = {
         "CHEBI": "ChEBI",
