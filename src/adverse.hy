@@ -19,6 +19,9 @@
 (with [f (open "data/translator_drug_list.json" "r")]
   (setv drug-list (pd.read-json f)))
 
+;(with [f (open "data/drug_list.json" "r")]
+;  (setv drug-list (pd.read-json f)))
+
 (setkey drug-list "Names List"
   (.apply (get drug-list "All Names")
     (fn [x]
@@ -32,9 +35,11 @@
 (setv drug-to-setids (dict))
 
 (setv all-drug-names (set))
-(for [name (get drug-list "DrugBank Name")]
-  (when (is-not name None)
-    (all-drug-names.add (.lower name))))
+(for [names (get drug-list "Names List")]
+  (all-drug-names.update
+    (lfor
+      name names
+      (.lower name))))
 
 (for [drug-name-lower (tqdm all-drug-names)]
   (setv mask
@@ -58,5 +63,5 @@
 
 (setkey drug-list "SETID" result-setids)
 
-(with [f (open "data/smaller_spl_setids_list.json" "w")]
+(with [f (open "data/translator_spl_setids_list.json" "w")]
   (drug-list.to-json f :orient "records"))
