@@ -4,6 +4,7 @@
 
 (require hyrule [-> doto meth ncut])
 (import catboost :as cb)
+(import hyrule [flatten])
 (import numpy :as np)
 (import pandas :as pd)
 (import rdkit [Chem RDLogger])
@@ -183,6 +184,7 @@
     (setv name-col (.apply (get @drug-list name-col-name) unwrap-list))
     ;; tedious column making for what we're about to store
     ;; variable name, column title, initial value
+    (create-var-column all-names-column "All Names" (@drug-list.apply (fn [_] (list)) :axis 1))
     (create-var-column cas-column "CAS Registry Number" None)
     (create-var-column fda-column "FDA Approved" None)
     (create-var-column indication-column "Indication" None)
@@ -193,13 +195,16 @@
     (create-var-column unii-column "UNII" None)
     (setv drugbank (DrugBank filename id-col id-type-col name-col))
     (for [#(matches element) (drugbank.get-matches)]
+      (setv (ncut @drug-list.loc matches all-names-column)
+        (.apply (ncut @drug-list.loc matches all-names-column) (fn [_] (flatten (drugbank.all-names element)))))
       (setv (ncut @drug-list.loc matches cas-column) (drugbank.cas-number element))
       (setv (ncut @drug-list.loc matches fda-column) (drugbank.fda-approval element))
       (setv (ncut @drug-list.loc matches indication-column) (drugbank.indication element))
       (setv (ncut @drug-list.loc matches mechanism-column) (drugbank.mechanism element))
       (setv (ncut @drug-list.loc matches name-column) (drugbank.name element))
       (setv (ncut @drug-list.loc matches price-column)
-        (.apply (ncut @drug-list.loc matches price-column) (fn [_] (drugbank.prices element)))) ; prices is a list
+        (.apply (ncut @drug-list.loc matches price-column)
+          (fn [_] (drugbank.prices element)))) ; prices is a list
       (setv (ncut @drug-list.loc matches smiles-column) (drugbank.smiles element))
       (setv (ncut @drug-list.loc matches unii-column) (drugbank.unii element))))
 
@@ -259,8 +264,8 @@
   (setv augmenter
     ;(-> (DataAugmenter "data/src/drug_list.csv")
     (-> (DataAugmenter "data/translator_drugs.json")
-      (.load-drug-queries)
-      (.load-admet-models {"Blood Brain Barrier" "data/admet/bbb_martins-0.916-0.002.dump" "Bioavailability" "data/admet/bioavailability_ma-0.74-0.01.dump" "Human Intestinal Absorption" "data/admet/hia_hou-0.989-0.001.dump"})))
+     (.load-drug-queries)
+     (.load-admet-models {"Blood Brain Barrier" "data/admet/bbb_martins-0.916-0.002.dump" "Bioavailability" "data/admet/bioavailability_ma-0.74-0.01.dump" "Human Intestinal Absorption" "data/admet/hia_hou-0.989-0.001.dump"})))
   (setv (get augmenter.drug-list "id_type") "cas-number")
   (doto augmenter
     ;(.match-drugbank "data/src/drugbank.xml" "CAS Registry Number" "id_type" "Canonical Name")
