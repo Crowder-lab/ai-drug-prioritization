@@ -12,6 +12,8 @@ dependencies = [
     "molfeat[dgl]>=0.11.0",
     "numpy<2",
     "pandas==2.0.0",
+    "pycairo>=1.28.0 ; sys_platform == 'linux'",
+    "pygobject>=3.52.3 ; sys_platform == 'linux'",
     "pytdc>=0.4.1",
     "rdkit>=2024.9.5",
     "scikit-learn>=1.6.1",
