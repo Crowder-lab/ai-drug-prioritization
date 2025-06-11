@@ -32,11 +32,9 @@
 (setv drug-to-setids (dict))
 
 (setv all-drug-names (set))
-(for [names (get drug-list "Names List")]
-  (all-drug-names.update
-    (lfor
-      name names
-      (.lower name))))
+(for [name (get drug-list "DrugBank Name")]
+  (when (is-not name None)
+    (all-drug-names.add (.lower name))))
 
 (for [drug-name-lower (tqdm all-drug-names)]
   (setv mask
@@ -49,15 +47,16 @@
     (.tolist (ncut dailymed.loc mask "SETID"))))
 
 (setv result-setids [])
-(for [names (tqdm (get drug-list "Names List"))]
+(for [#(names fda-approved) (zip (get drug-list "Names List") (get drug-list "FDA Approved"))]
   (setv setids (set))
-  (for [name names]
-    (setv name-lower (.lower name))
-    (when (in name-lower drug-to-setids)
-      (setids.update (get drug-to-setids name-lower))))
+  (when fda-approved
+    (for [name names]
+      (setv name-lower (.lower name))
+      (when (in name-lower drug-to-setids)
+        (setids.update (get drug-to-setids name-lower)))))
   (result-setids.append (list setids)))
 
 (setkey drug-list "SETID" result-setids)
 
-(with [f (open "data/spl_setids_list.json" "w")]
+(with [f (open "data/smaller_spl_setids_list.json" "w")]
   (drug-list.to-json f :orient "records"))
