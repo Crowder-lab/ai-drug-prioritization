@@ -780,7 +780,7 @@ class ValueWrapper:
 
 
 if __name__ == "__main__":
-    pk_input = ValueWrapper("8cc5d951-8bf0-41dd-86f4-d20d3b946c54")
+    pk_input = ValueWrapper("297cc1a8-79c7-40a7-8546-05f5757836b8")
     env_input = ValueWrapper("prod")
     attribute_check = ValueWrapper("DO NOT Download JSON")
 
