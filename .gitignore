@@ -10,6 +10,7 @@ drugbank/database.xml
 # python
 .venv/
 __pycache__/
+__marimo__/
 
 # R
 *.rds
