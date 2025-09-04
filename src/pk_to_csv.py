@@ -309,7 +309,7 @@ def recombobulation(edge_data):
 ##############################
 # Function to run when button is clicked
 ##############################
-def run_on_click(b):
+def run_on_click(b, search_term, identifier):
     global file_count
     global edges, nodes, resuls, auxiliary_graphs
     # result_count = 0
@@ -548,7 +548,7 @@ def run_on_click(b):
     print(f"# Results = {len(results)}")
     print(f"# Rows found = {len(all_rows)}")
     # print(all_rows)
-    save_file(all_rows, merged_json_data)
+    save_file(all_rows, merged_json_data, search_term, identifier)
     # make_histo(all_rows)
 
 
@@ -708,7 +708,7 @@ def make_histo(all_rows, calc_pdf_filename):
 # SAVE DATA AS CSV
 # AND RUN THE PDF OF HISTOGRAM FUNCTION
 ##################
-def save_file(all_rows, merged_json_data):
+def save_file(all_rows, merged_json_data, search_term, identifier):
     global qualifiers
     # Download the CSV file
     print("ABOUT TO SAVE CSV")
@@ -732,15 +732,15 @@ def save_file(all_rows, merged_json_data):
     # print(f"qualifiers = {qualifiers}")
 
     # GET NAME OF CREATIVE TARGET
-    most_common_object_name = ""
-    most_common_object_name = df["result_objectNode_name"].mode()[0]
+    # most_common_object_name = ""
+    # most_common_object_name = df["result_objectNode_name"].mode()[0]
 
     # CREATE NAME FROM INFO
-    filename = "{}_{}_{}_{}_{}_{}_{}".format(most_common_object_name, pk_for_file, year, month, day, hour, minute)
+    filename = "{}_{}_{}_{}-{:02}-{:02}_{:02}:{:02}".format(search_term, identifier, pk_for_file, year, month, day, hour, minute)
     print(filename)  # Outputs: 'Year_Month_Day_Hour_Minute_Second'
 
     # RUN THE HISTOGRAM FUNCTION
-    make_histo(all_rows, filename)
+    # make_histo(all_rows, filename)
     # Save the DataFrame to a CSV file with your filename
     df.to_csv(f"data/translator/{filename}.csv", index=False)
 
@@ -774,14 +774,39 @@ url_dict = {
 }
 
 
-class ValueWrapper:
-    def __init__(self, arg):
-        self.value = arg
-
-
 if __name__ == "__main__":
-    pk_input = ValueWrapper("297cc1a8-79c7-40a7-8546-05f5757836b8")
+    import re
+    import sys
+
+    class ValueWrapper:
+        def __init__(self, arg):
+            self.value = arg
+
+    if len(sys.argv) != 2:
+        exit("Provide a translator link")
+
+    translator_link = sys.argv[1]
+    search_regex = r"\?l=(.*)&i"
+    id_regex = r"&i=(.*)&t"
+    pk_regex = r"&q=([a-z0-9\-]+)$"
+
+    search_match = re.search(search_regex, translator_link)
+    if search_match is None:
+        exit(f"Could not find search term from input.\nInput was:\n\t{translator_link}")
+    search_term = search_match.groups()[0].replace("%20", " ")
+
+    id_match = re.search(id_regex, translator_link)
+    if id_match is None:
+        exit(f"Could not find indentifier from input.\nInput was:\n\t{translator_link}")
+    identifier = id_match.groups()[0]
+
+    pk_match = re.search(pk_regex, translator_link)
+    if pk_match is None:
+        exit(f"Could not find PK from input.\nInput was:\n\t{translator_link}")
+    pk = pk_match.groups()[0]
+
+    pk_input = ValueWrapper(pk)
     env_input = ValueWrapper("prod")
     attribute_check = ValueWrapper("DO NOT Download JSON")
 
-    run_on_click(None)
+    run_on_click(None, search_term, identifier)
