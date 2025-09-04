@@ -1,6 +1,7 @@
 #!/usr/bin/env uv run
 
 import os
+from collections import Counter
 from collections.abc import Iterable
 from typing import Any
 
@@ -49,11 +50,11 @@ class TranslatorData:
         return df
 
     def get_drug_list(self) -> pd.DataFrame:
+        # filter result_subjectNode_cat and result_objectNode_cat to be in our drug categories
         df = self.filter_equal(
             ("result_subjectNode_cat", "result_objectNode_cat"),
             self._drug_categories,
         ).copy(deep=True)
-
         # combine subject and object to get chemicals only
         subject_is_drug = df["result_subjectNode_cat"].isin(self._drug_categories)
         for col_ending in ("name", "id", "cat"):
@@ -78,9 +79,24 @@ class TranslatorData:
         return df
 
 
+def print_stats(df) -> None:
+    total_rows = len(df)
+    print(f"Total number of drugs and small molecules: {total_rows}")
+
+    all_terms = []
+    for term_set in df["search term"]:
+        all_terms.extend(term_set)
+
+    term_counts = Counter(all_terms)
+    print("\nSearch term counts:")
+    for term, count in term_counts.most_common():
+        print(f"\t{term}: {count} drugs")
+
+
 if __name__ == "__main__":
     translator_folder = "data/translator/"
     translator_results = TranslatorData(translator_folder)
     drug_list = translator_results.get_drug_list()
+    print_stats(drug_list)
     with open("data/translator_drugs.json", "w") as f:
         drug_list.to_json(f, orient="records")
