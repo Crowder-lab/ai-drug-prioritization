@@ -27,14 +27,14 @@
 
   (meth __init__ [@filename @ids @id-types names]
     (setv @names (.str.lower names))
-    (setv @get-ids {"cas-number" @cas-number
-                    "ChEBI" @chebi
-                    "ChEMBL" @chembl
-                    "drugbank-id" @drugbank
-                    "InChIKey" @inchikey
-                    "PubChem Compound" @pubchem-compound
+    (setv @get-ids {"cas-number"        @cas-number
+                    "ChEBI"             @chebi
+                    "ChEMBL"            @chembl
+                    "drugbank-id"       @drugbank
+                    "InChIKey"          @inchikey
+                    "PubChem Compound"  @pubchem-compound
                     "PubChem Substance" @pubchem-substance
-                    "unii" @unii}))
+                    "unii"              @unii}))
 
   (meth get-matches []
     (for [#(_ element) (tqdm (ET.iterparse @filename ["end"]))]
@@ -52,12 +52,21 @@
     (for [#(id-type id-func) (.items @get-ids)]
       (setv id-val (id-func element))
       (when (is id-val None) (continue))
-      (setv id-matches (& (= @id-types id-type) (= @ids id-val)))
-      (setv matches (| matches id-matches)))
+      (setv id-type-matches (= @id-types id-type))
+      (setv id-val-matches (= @ids id-val))
+      ;(when (> (.sum id-val-matches) 0)
+      ;  (print "START")
+      ;  (print f"current id type: {id-type}")
+      ;  (print f"current name: {(@name element)}")
+      ;  (print (get @id-types id-val-matches))
+      ;  (print (get @names id-val-matches))
+      ;  (print "END"))
+      (setv id-full-matches (& id-type-matches id-val-matches))
+      (setv matches (| matches id-full-matches)))
     ;; names can't use the same logic as the other id types
-    (setv #(generic-names brand-names) (@all-names element))
-    (setv matches (| matches (@names.isin generic-names)))
-    (setv matches (| matches (@names.isin brand-names)))
+    ;(setv #(generic-names brand-names) (@all-names element))
+    ;(setv matches (| matches (@names.isin generic-names)))
+    ;(setv matches (| matches (@names.isin brand-names)))
     (return matches))
 
   (meth all-names [element]
@@ -139,10 +148,27 @@
 
 
 (defclass DataAugmenter []
-  (defmacro create-var-column [var-name col-name col-initial-value]
+  (defmacro create-var-column [var-name col-name]
     `(do
        (setv ~var-name ~col-name)
-       (setv (get self.drug-list ~var-name) ~col-initial-value)))
+       (setv (get self.drug-list ~var-name) (self.drug-list.apply (fn [_] (list)) :axis 1))))
+
+  (meth add-to-column [col-name analysis-function matches element]
+    (setv (ncut @drug-list.loc matches col-name)
+      (.apply (ncut @drug-list.loc matches col-name)
+        (fn [x]
+          (setv new-vals (flatten (analysis-function element)))
+          (if (isinstance new-vals list)
+            (.extend x new-vals)
+            (.append x new-vals))
+          x))))
+
+  (meth unwrap-list [x]
+    (if (isinstance x list)
+      (if (> (len x) 0)
+        (get x 0)
+        None)
+      x))
 
   (meth __init__ [@filename]
     (setv @drug-list None)
@@ -178,58 +204,68 @@
     (when (is @drug-list None)
       (raise (ValueError "drug-list is not defined. Call load-drug-queries before match-drugbank.")))
     ;; make sure the cols are strings and not lists of strings
-    (setv unwrap-list (fn [x] (if (isinstance x list) (get x 0) x)))
-    (setv id-col (.apply (get @drug-list id-col-name) unwrap-list))
-    (setv id-type-col (.apply (get @drug-list id-type-col-name) unwrap-list))
-    (setv name-col (.apply (get @drug-list name-col-name) unwrap-list))
+    (setv id-col (.apply (get @drug-list id-col-name) @unwrap-list))
+    (setv (get @drug-list id-col-name) id-col)
+    (setv id-type-col (.apply (get @drug-list id-type-col-name) @unwrap-list))
+    (setv (get @drug-list id-type-col-name) id-type-col)
+    (setv name-col (.apply (get @drug-list name-col-name) @unwrap-list))
+    (setv (get @drug-list name-col-name) name-col)
     ;; tedious column making for what we're about to store
-    ;; variable name, column title, initial value
-    (create-var-column all-names-column "All Names" (@drug-list.apply (fn [_] (list)) :axis 1))
-    (create-var-column cas-column "CAS Registry Number" None)
-    (create-var-column fda-column "FDA Approved" None)
-    (create-var-column indication-column "Indication" None)
-    (create-var-column mechanism-column "Mechanism" None)
-    (create-var-column name-column "DrugBank Name" None)
-    (create-var-column price-column "Prices" (@drug-list.apply (fn [_] (list)) :axis 1))
-    (create-var-column smiles-column "SMILES" None)
-    (create-var-column unii-column "UNII" None)
+    ;; variable name, column title
+    (create-var-column all-names-column  "All Names")
+    (create-var-column cas-column        "CAS Registry Number")
+    (create-var-column fda-column        "FDA Approved")
+    (create-var-column indication-column "Indication")
+    (create-var-column mechanism-column  "Mechanism")
+    (create-var-column name-column       "DrugBank Name")
+    (create-var-column price-column      "Prices")
+    (create-var-column smiles-column     "SMILES")
+    (create-var-column unii-column       "UNII")
+    ;; go through matches and add info to the correct columns
     (setv drugbank (DrugBank filename id-col id-type-col name-col))
     (for [#(matches element) (drugbank.get-matches)]
-      (setv (ncut @drug-list.loc matches all-names-column)
-        (.apply (ncut @drug-list.loc matches all-names-column) (fn [_] (flatten (drugbank.all-names element)))))
-      (setv (ncut @drug-list.loc matches cas-column) (drugbank.cas-number element))
-      (setv (ncut @drug-list.loc matches fda-column) (drugbank.fda-approval element))
-      (setv (ncut @drug-list.loc matches indication-column) (drugbank.indication element))
-      (setv (ncut @drug-list.loc matches mechanism-column) (drugbank.mechanism element))
-      (setv (ncut @drug-list.loc matches name-column) (drugbank.name element))
-      (setv (ncut @drug-list.loc matches price-column)
-        (.apply (ncut @drug-list.loc matches price-column)
-          (fn [_] (drugbank.prices element)))) ; prices is a list
-      (setv (ncut @drug-list.loc matches smiles-column) (drugbank.smiles element))
-      (setv (ncut @drug-list.loc matches unii-column) (drugbank.unii element))))
+      (@add-to-column all-names-column drugbank.all-names matches element)
+      (@add-to-column cas-column drugbank.cas-number matches element)
+      (@add-to-column fda-column drugbank.fda-approval matches element)
+      (@add-to-column indication-column drugbank.indication matches element)
+      (@add-to-column mechanism-column drugbank.mechanism matches element)
+      (@add-to-column name-column drugbank.name matches element)
+      (@add-to-column price-column drugbank.prices matches element)
+      (@add-to-column smiles-column drugbank.smiles matches element)
+      (@add-to-column unii-column drugbank.unii matches element))
+    (setv id-col (.apply (get @drug-list id-col-name) @unwrap-list))
+    (setv (get @drug-list id-col-name) id-col)
+    (setv id-type-col (.apply (get @drug-list id-type-col-name) @unwrap-list))
+    (setv (get @drug-list id-type-col-name) id-type-col))
 
-  (meth deduplicate []
+  (meth deduplicate [id-col-name]
     (when (is @drug-list None)
       (raise (ValueError "drug-list is not defined. Call load-drug-queries before deduplicate.")))
     (when (not-in "DrugBank Name" @drug-list.columns)
       (raise (ValueError "ID data does not exist yet. Run match-drugbank to create it.")))
     (setv @drug-list
       (-> @drug-list
-        (.groupby "DrugBank Name")
+        (.groupby id-col-name)
         (.agg
           (fn [x]
+            ;; make a list out of all the items in x
             (setv y [])
             (for [item x]
               (if (isinstance item list)
                 (y.extend item)
                 (y.append item)))
+            ;; turn that into a set to deduplicate it
             (setv z (set y))
+            ;; get rid of None elements
             (z.discard None)
             (cond
+              ;; turn into bare elements if possible
               (= (len z) 0) None
               (= (len z) 1) (.pop z)
+              ;; else return the whole set
               True z)))
         (.reset-index))))
+    ;(print (get @drug-list (= (get @drug-list "Canonical Name") "Oxindole"))))
 
   (meth predict-admet []
     (when (is @drug-list None)
@@ -262,15 +298,20 @@
 
 (when (= __name__ "__main__")
   (setv augmenter
-    ;(-> (DataAugmenter "data/src/drug_list.csv")
-    (-> (DataAugmenter "data/translator_drugs.json")
-     (.load-drug-queries)
-     (.load-admet-models {"Blood Brain Barrier" "data/admet/bbb_martins-0.916-0.002.dump" "Bioavailability" "data/admet/bioavailability_ma-0.74-0.01.dump" "Human Intestinal Absorption" "data/admet/hia_hou-0.989-0.001.dump"})))
+    (-> (DataAugmenter "data/src/drug_list.csv")
+    ;(-> (DataAugmenter "data/translator_drugs.json")
+      (.load-drug-queries)
+      (.load-admet-models
+        {"Blood Brain Barrier" "data/admet/bbb_martins-0.916-0.002.dump"
+         "P-glycoprotein Inhibition" "data/admet/pgp_broccatelli-0.938-0.0.dump"
+         "Human Intestinal Absorption" "data/admet/hia_hou-0.989-0.001.dump"
+         "Drug Induced Liver Injury" "data/admet/dili-0.918-0.005.dump"})))
   (setv (get augmenter.drug-list "id_type") "cas-number")
   (doto augmenter
-    ;(.match-drugbank "data/src/drugbank.xml" "CAS Registry Number" "id_type" "Canonical Name")
-    (.match-drugbank "data/src/drugbank.xml" "result_id" "id_type" "result_name")
-    (.deduplicate)
+    (.match-drugbank "data/src/drugbank.xml" "CAS Number" "id_type" "Canonical Name")
+    ;(.match-drugbank "data/src/drugbank.xml" "result_id" "id_type" "result_name")
+    (.deduplicate "CAS Number")
+    ;(.deduplicate "result_id")
     (.predict-admet)
-    ;(.save-drug-info "data/drug_list.json")))
-    (.save-drug-info "data/translator_drug_list.json")))
+    (.save-drug-info "data/drug_list.json")))
+    ;(.save-drug-info "data/translator_drug_list.json")))

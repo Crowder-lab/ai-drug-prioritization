@@ -20,25 +20,44 @@
     (!= (.find (.lower (get (re.search answer-regexp chatgpt-output) 0)) "yes") -1)
     False))
 
+;;; open extra data
 (with [f (open "data/src/pubmed_answers.json" "r")]
   (setv answers (json.load f)))
 (with [f (open "../PubMed-Embedding-Project/drug_names.txt" "r")]
   (setv drug-names (list (map (fn [s] (cut s None -1)) (.readlines f)))))
 
+;;; open augmented drug data
 (with [f (open "data/drug_list.json" "r")]
-  (setv data (pd.read_json f)))
+  (setv initial-data (pd.read-json f)))
+(with [f (open "data/translator_drug_list.json" "r")]
+  (setv translator-data (pd.read-json f)))
+(setcol translator-data "Clinician Recommendation" False)
+(setcol translator-data "Screened" False)
+
+;;; combine drug data
+(setv same-cols
+  (list
+    (set.intersection
+      (set (. initial-data columns))
+      (set (. translator-data columns)))))
+(setv data (pd.concat [(get initial-data same-cols) (get translator-data same-cols)] :ignore-index True))
 
 (setcol data "Pediatric Safety" False)
 (for [#(drug-name answer) (zip drug-names answers)]
-  (setv (ncut data.loc (= (get data "Canonical Name") drug-name) "Pediatric Safety") (is-safe (get answer "answer"))))
+  (setv (ncut data.loc (= (get data "DrugBank Name") drug-name) "Pediatric Safety") (is-safe (get answer "answer"))))
 
 (setcol data "score" 0)
 
 ;;; exclude completely for these
 (setv very-large-number 1e9)
-(ap-each
-  #("Bioavailability" "Blood Brain Barrier" "Human Intestinal Absorption")
-  (-= (ncut data.loc (< (get data it) 0.5) "score") very-large-number))
+(-=
+  (ncut data.loc
+    (&
+      (< (get data "Blood Brain Barrier") 0.5)
+      (< (get data "P-glycoprotein Inhibition") 0.5))
+    "score")
+  very-large-number)
+(-= (ncut data.loc (< (get data "Human Intestinal Absorption") 0.5) "score") very-large-number)
 
 ;;; 1: FDA approved
 (addcol data "score" (.fillna (get data "FDA Approved") False))
@@ -78,11 +97,19 @@
 ;;; 1: Safe in children
 (addcol data "score" (get data "Pediatric Safety"))
 
+;;; 1: No liver injury
+(+= (ncut data.loc (< (get data "Drug Induced Liver Injury") 0.5) "score") 1)
+;;; -1: Liver injury
+(-= (ncut data.loc (> (get data "Drug Induced Liver Injury") 0.5) "score") 1)
+
+;;; override clinician recommended to top
+(setv (ncut data.loc (get data "Clinician Recommendation") "score") very-large-number)
+
 ;;; sort by score
-(data.sort_values
+(data.sort-values
   :by "score"
   :ascending False
   :inplace True)
 
-(with [f (open f"data/ranked.csv" "w")]
-  (.to_csv data f))
+(with [f (open "data/ranked.csv" "w")]
+  (.to-csv data f :index False))

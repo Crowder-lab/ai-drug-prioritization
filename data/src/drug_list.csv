@@ -1,117 +1,117 @@
-Canonical Name,CAS Registry Number,Drug Library Name,Have It,Screened,Not In DrugBank,Repurposing Category,Repurposing Continued,RB Case Reports/Pediatric Safety,RB Side Effects/Adverse Events,RB Bioavailability ,RB Links,ED Side Effect Rank,ED Pediatric Safety
+Canonical Name,CAS Number,Drug Library Name,Have It,Screened,Not In DrugBank,Repurposing Category,Repurposing Continued,RB Case Reports/Pediatric Safety,RB Side Effects/Adverse Events,RB Bioavailability ,RB Links,ED Side Effect Rank,ED Pediatric Safety,Clinician Recommendation
+3β-Methoxypregnenolone,511-26-2,map4343,TRUE,TRUE,TRUE,symptomatic relief,,,,,,,FALSE,FALSE
 Acetylcysteine,616-91-1,N-acetylcysteine,TRUE,FALSE,FALSE,anti-inflammatory,,Yes,"stomatitis, nausea, vomiting, fever, rhinorrhea, drowsiness, clamminess, chest tightness, and bronchoconstriction","Oral Mucomyst is between 4 and 9.1% in one study and between 6 and 10% in another; however, studies using less than 1200 mg per day may show no significant benefit. The half-life is 6.25 hours, and clearance is both renal and nonrenal.","https://www.accessdata.fda.gov/drugsatfda_docs/nda/pre96/013601Orig1s029.pdf 
 https://www.aboutkidshealth.ca/acetylcysteine 
 https://www.drugs.com/pro/mucomyst.html 
 https://pmc.ncbi.nlm.nih.gov/articles/PMC8211525/ 
 https://pmc.ncbi.nlm.nih.gov/articles/PMC3553161/ 
-https://www.medicine.com/drug/acetylcysteine/hcp",2,TRUE
-Apilimod,541550-19-0,Apilimod (AIT101),TRUE,FALSE,FALSE,kinase inhibitor,,No,Clinical Trials ongoing,Not known,"https://www.mdpi.com/2073-4409/10/1/30#:~:text=In%20a%20screen%20of%2012%2C000%20clinical-stage%20or%20FDA-approved,blocking%20replication%20of%20SARS-CoV-2%20in%20iPSC-derived%20pneumocyte-like%20cells",,FALSE
+https://www.medicine.com/drug/acetylcysteine/hcp",2,TRUE,FALSE
+Albuterol,18559-94-9,salbutamol,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE,FALSE
+Alvocidib,146426-40-6,flavorpiridol (hcl),TRUE,TRUE,FALSE,kinase inhibitor,,,,,,,FALSE,FALSE
+Amantadine,768-94-5,Amantadine,TRUE,TRUE,FALSE,symptomatic relief,symptomatic relief,,,,,,FALSE,TRUE
+Ambroxol,18683-91-5,Ambroxol,TRUE,TRUE,FALSE,anti-inflammatory,,,,,,,FALSE,FALSE
+Apilimod,541550-19-0,Apilimod (AIT101),TRUE,FALSE,FALSE,kinase inhibitor,,No,Clinical Trials ongoing,Not known,"https://www.mdpi.com/2073-4409/10/1/30#:~:text=In%20a%20screen%20of%2012%2C000%20clinical-stage%20or%20FDA-approved,blocking%20replication%20of%20SARS-CoV-2%20in%20iPSC-derived%20pneumocyte-like%20cells",,FALSE,FALSE
 Astaxanthin,472-61-7,Astaxanthin,FALSE,FALSE,FALSE,anti-inflammatory,,No,digestive system-related symptoms,Recommended dosage is 4 mg/day. The FDA has approved doses up to 12 mg/day.,"https://www.webmd.com/diet/health-benefits-astaxanthin 
 https://www.verywellhealth.com/astaxanthin-uses-side-effects-precautions-storage-7507313#toc-uses-of-astaxanthin 
 https://pmc.ncbi.nlm.nih.gov/articles/PMC7723678/#:~:text=Astaxanthin%20protects%20cell%20membranes%20against%20RONS%20and%20oxidative,into%20the%20inner%20non-polar%20region%20of%20the%20membrane 
-https://pmc.ncbi.nlm.nih.gov/articles/PMC5352583/",,FALSE
+https://pmc.ncbi.nlm.nih.gov/articles/PMC5352583/",,FALSE,FALSE
+AT-7519,844442-38-2,AT-7519,TRUE,TRUE,FALSE,kinase inhibitor,,,,,,,FALSE,FALSE
+Baclofen,1134-47-0,Baclofen,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE,FALSE
+Baicalein,491-67-8,Baicalein,TRUE,TRUE,FALSE,anti-inflammatory,,,,,,,FALSE,FALSE
 Benfotiamine,22457-89-2,Benfotiamine,TRUE,FALSE,FALSE,anti-inflammatory,,Not established,"nausea, dizziness, stomach ache and weight gain",It is most often used by adults in doses of 150-600 mg by mouth daily for up to 6 months,"https://www.webmd.com/vitamins/ai/ingredientmono-1574/benfotiamine 
-https://en.wikipedia.org/wiki/Benfotiamine",,FALSE
+https://en.wikipedia.org/wiki/Benfotiamine",,FALSE,FALSE
 Bentiamine,299-88-7,dibenzoyl thiamine,TRUE,FALSE,TRUE,anti-inflammatory,,,No known side effects- excess is excreted through urine,is rapidly absorbed into the body and converted to thiamine,"https://www.chemicalbook.com/ChemicalProductProperty_EN_CB1369777.htm
-https://www.glpbio.com/dibenzoyl-thiamine-bentiamine.html",,FALSE
+https://www.glpbio.com/dibenzoyl-thiamine-bentiamine.html",,FALSE,FALSE
 Berberine,2086-83-1,Berberine,TRUE,FALSE,FALSE,anti-inflammatory,,No,"Diarrhea, constipation, gas, and upset stomach",Used safely in doses up to 1.5 grams daily for 6 months,"https://pmc.ncbi.nlm.nih.gov/articles/PMC8909195/ 
-https://www.webmd.com/vitamins/ai/ingredientmono-1126/berberine",,FALSE
-Citalopram,59729-33-8,Citalopram,TRUE,FALSE,FALSE,increase neuroplasticity,,Not Established,"Somnolence, Insomnia, Nausea, Dry Mouth, Sweating Increase, tremor","The single- and multiple-dose pharmacokinetics of citalopram are linear and dose-proportional in a dose range of 10-60 mg/day. Biotransformation of citalopram is mainly hepatic, with a mean terminal half-life of about 35 hours. With once daily dosing, steady state plasma concentrations are achieved within approximately one week. At steady state, the extent of accumulation of citalopram in plasma,based on the half-life, is expected to be 2.5 times the plasma concentrations observed after a single dose.",https://www.accessdata.fda.gov/drugsatfda_docs/label/1998/20822lbl.pdf,2,FALSE
-Dasotraline,675126-05-3,dasotraline,TRUE,FALSE,FALSE,increase dopamine signaling,,Not established,"insomnia, dry mouth, headache, decreased appetite, nausea and anxiety",It has an extended half-life (47-77 hours in adults; 58-84 hours in children) that supports the potential for stable plasma concentrations yielding a continuous therapeutic effect over the 24-hour dosing interval.,"https://www.drugs.com/nda/dasotraline_180831.html 
-https://www.pharmaceutical-business-review.com/news/sunovion-announces-acceptance-by-fda-of-nda-for-dasotraline-to-treat-binge-eating-disorder/ ",,FALSE
-Gabapentin,60142-96-3,gabapentin (HCl),TRUE,FALSE,FALSE,increase gaba signaling,,,,,,3,FALSE
+https://www.webmd.com/vitamins/ai/ingredientmono-1126/berberine",,FALSE,FALSE
+Buspirone,36505-84-7,Buspirone,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE,FALSE
+Captopril,62571-86-2,Captopril,TRUE,TRUE,FALSE,anti-inflammatory,,Not established- however some reported literature,"proteinuria, renal insufficiency, renal failure, nephrotic syndrome, polyuria, oliguria, urinary frequency, Hypotension","In a 24-hour period, over 95 percent of the absorbed dose is eliminated in the urine; 40 to 50 percent is unchanged drug; most of the remainder is the disulfide dimer of captopril and captopril-cysteine disulfide. Approximately 25 to 30 percent of the circulating drug is bound to plasma proteins. The apparent elimination half-life for total radioactivity in blood is probably less than 3 hours.
+The initial dose of CAPOTEN (captopril tablets, USP) is 25 mg b.i.d. or t.i.d. The dose of CAPOTEN in hypertension usually does not exceed 50 mg t.i.d.","https://www.ncbi.nlm.nih.gov/books/NBK535386/ 
+https://www.accessdata.fda.gov/drugsatfda_docs/label/2017/018343s087lbl.pdf",2,FALSE,FALSE
+Carbamazepine,298-46-4,Carbamazepine,TRUE,TRUE,FALSE,symptomatic relief,,"Yes, CBZ elimination is more rapid in children, necessitating the need for higher mg/kg doses than are commonly employed in adults.","dizziness, loss of coordination, problems with walking; nausea, vomiting, or drowsiness","Usual adult therapeutic levels are between 4 and 12 µg/mL. Because Tegretol induces its own metabolism, the half-life is also variable. Autoinduction is completed after 3-5 weeks of a fixed dosing regimen. Initial half-life values range from 25-65 hours, decreasing to 12-17 hours on repeated doses.","https://pubmed.ncbi.nlm.nih.gov/1803802/#:~:text=Carbamazepine%20%28CBZ%29%20has%20become%20a%20commonly%20used%20antiepileptic,seizures%20but%20also%20for%20primary%20generalized%20tonic-clonic%20seizures. https://www.drugs.com/tegretol.html https://pubmed.ncbi.nlm.nih.gov/16412277/ ",2,TRUE,FALSE
+Levodopa,59-92-7,Carbidopa + Levodopa,TRUE,TRUE,TRUE,"symptomatic relief, increase dopamine signaling",,,,,,,FALSE,TRUE
+Cefoperazone,62893-19-0,Cefoperazone,TRUE,TRUE,FALSE,"protein of interest modulator, immunomodulators, antimicrobial",arf6 modulator;;antibiotic,,,,,,FALSE,TRUE
+Citalopram,59729-33-8,Citalopram,TRUE,TRUE,FALSE,increase neuroplasticity,,Not Established,"Somnolence, Insomnia, Nausea, Dry Mouth, Sweating Increase, tremor","The single- and multiple-dose pharmacokinetics of citalopram are linear and dose-proportional in a dose range of 10-60 mg/day. Biotransformation of citalopram is mainly hepatic, with a mean terminal half-life of about 35 hours. With once daily dosing, steady state plasma concentrations are achieved within approximately one week. At steady state, the extent of accumulation of citalopram in plasma,based on the half-life, is expected to be 2.5 times the plasma concentrations observed after a single dose.",https://www.accessdata.fda.gov/drugsatfda_docs/label/1998/20822lbl.pdf,2,FALSE,FALSE
+Curcumin,458-37-7,Curcumin,TRUE,TRUE,FALSE,neuroprotective,,,,,,,FALSE,FALSE
+Cysteamine,60-23-1,,TRUE,TRUE,FALSE,anti-inflammatory,,,,,,1,FALSE,FALSE
+Dantrolene,7261-97-4,Dantrolene,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE,TRUE
+Daprodustat,960539-70-2,Daprodustat,TRUE,TRUE,FALSE,protein of interest modulator,arf6 modulator,,,,,,FALSE,TRUE
+Dasotraline,675126-05-3,dasotraline,TRUE,TRUE,FALSE,increase dopamine signaling,,Not established,"insomnia, dry mouth, headache, decreased appetite, nausea and anxiety",It has an extended half-life (47-77 hours in adults; 58-84 hours in children) that supports the potential for stable plasma concentrations yielding a continuous therapeutic effect over the 24-hour dosing interval.,"https://www.drugs.com/nda/dasotraline_180831.html 
+https://www.pharmaceutical-business-review.com/news/sunovion-announces-acceptance-by-fda-of-nda-for-dasotraline-to-treat-binge-eating-disorder/ ",,FALSE,FALSE
+Dinaciclib,779353-01-4,Dinaciclib,TRUE,TRUE,FALSE,kinase inhibitor,,,,,,,FALSE,FALSE
+Donepezil,120014-06-4,Donepezil,TRUE,TRUE,FALSE,increase neuroplasticity,,,,,,,FALSE,FALSE
+Escitalopram,128196-01-0,escitalopram (oxalate) ,TRUE,TRUE,FALSE,symptomatic relief,,,,,,2,FALSE,FALSE
+Everolimus,159351-69-6,Everolimus,TRUE,TRUE,FALSE,protein of interest modulator,mtor inhibitor,,,,,,FALSE,TRUE
+Fluvoxamine,54739-18-3,Fluvoxamine,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE,FALSE
+Gabapentin,60142-96-3,gabapentin (HCl),TRUE,TRUE,FALSE,increase gaba signaling,,,,,,3,FALSE,FALSE
+Gambogic acid,2752-65-0,Gambogic Acid,TRUE,TRUE,TRUE,anti-inflammatory,,,,,,,FALSE,FALSE
+Glycyrrhizic acid,1405-86-3,Glycyrrhizic acid,TRUE,TRUE,FALSE,anti-inflammatory,,,,,,,FALSE,FALSE
+Guanfacine,29110-47-2,Guanfacine,TRUE,TRUE,FALSE,increase neuroplasticity,,"Yes, children >6+ years","Hypotension, bradycardia, and syncope, sedation, and somnolence",Guanfacine is readily absorbed and approximately 70% bound to plasma proteins independent of drug concentration. After oral administration the time to peak plasma concentration is approximately 5 hours in children and adolescents with ADHD.,https://www.accessdata.fda.gov/drugsatfda_docs/label/2009/022037lbl.pdf,2,TRUE,FALSE
 Halofuginone,55837-20-2,Halofuginone,TRUE,FALSE,FALSE,anti-inflammatory,,Not established,"Nausea, vomiting, hepatic toxicity, and fatigue",Readily bioavailable and rapidly absorbed following oral administration.,"https://go.drugbank.com/drugs/DB04866 
 https://pmc.ncbi.nlm.nih.gov/articles/PMC6272571/#:~:text=Halofuginone%20hydrobromide%20is%20an%20FDA%E2%80%93approved%20feed%20additive%20for,are%20used%20against%20protozoan%20parasites%20in%20cattle%20%5B23%5D
-https://medtigo.com/drug/halofuginone/",,FALSE
+https://medtigo.com/drug/halofuginone/",,FALSE,FALSE
 Hesperidin,520-26-3,Hesperidin,TRUE,FALSE,FALSE,"anti-inflammatory, neuroprotective",,No,"stomach pain and upset, diarrhea, and headache",Limited bioavailability,"https://pmc.ncbi.nlm.nih.gov/articles/PMC2593006/ 
 https://www.webmd.com/vitamins/ai/ingredientmono-1033/hesperidin 
-https://www.sciencedirect.com/science/article/abs/pii/B9780123984562000372#:~:text=Flavonoids%20have%20limited%20bioavailability%2C%20and%20consequently%20low%20plasma,flavonoids%20must%20exploit%20specific%20cell%20membrane%20transporter%20systems.",,FALSE
+https://www.sciencedirect.com/science/article/abs/pii/B9780123984562000372#:~:text=Flavonoids%20have%20limited%20bioavailability%2C%20and%20consequently%20low%20plasma,flavonoids%20must%20exploit%20specific%20cell%20membrane%20transporter%20systems.",,FALSE,FALSE
+Huperzine A,102518-79-6,Huperzine A,TRUE,TRUE,FALSE,protein of interest modulator,"trkb agonist, anticholinesterase inhibitor",,,,,,FALSE,FALSE
+Hydroxychloroquine,118-42-3,hyroxychlorquine,TRUE,TRUE,FALSE,neuroprotective,,,,,,,FALSE,TRUE
+Istradefylline,155270-99-8,Istradefylline,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE,FALSE
+Ketoconazole,65277-42-1,Ketoconazole,TRUE,TRUE,FALSE,antimicrobial,antifungal,,,,,,FALSE,FALSE
 Leucovorin,58-05-9,leucovorin,FALSE,FALSE,FALSE,kinase inhibitor,jnk inhibitor,"Yes, this drug is used safely in children. It is used to stop the chemotherapy medicine, methotrexate, from harming normal cells in children along with other uses. However, folic acid in large amounts may counteract the antiepileptic effect of phenobarbital, phenytoin and primidone, and increase the frequency of seizures in susceptible children.",Allergic-like reactions,"Oral absorption of leucovorin is saturable at doses above 25 mg. The apparent bioavailability of leucovorin was 97% for 25 mg, 75% for 50 mg and 37% for 100 mg. Frequent medical tests are needed to determine how long to treat with leucovorin.","https://www.aboutkidshealth.ca/leucovorin https://www.drugs.com/mtm/leucovorin.html https://www.drugs.com/pro/leucovorin-tablets.html#i4i_section_id_542b1807-c0a6-4302-8877-8b2b514d5bd8
-",3,TRUE
-Levocarnitine,541-15-1,Levocarnitine (tosylate),TRUE,FALSE,FALSE,anti-inflammatory,,,,,,1,FALSE
-Omaveloxolone,1474034-05-3,Omaveloxolone,TRUE,FALSE,FALSE,anti-inflammatory,,"No, Not established in <16 years old","Elevation of aminotransferases, Elevation of BNP, and Lipid abnormalities",150 mg (3 capsules) taken orally once daily,https://www.accessdata.fda.gov/drugsatfda_docs/label/2024/216718s002lbl.pdf,2,FALSE
-Penicillamine,52-67-5,D-penicillamine ,TRUE,FALSE,FALSE,anti-inflammatory,,"No, the efficacy in juvenile rheumatoid arthritis has not been established for children.","early and late rashes, fever, arthralgia, lymphadenopathy, anorexia, epigastric pain, nausea, vomiting, occasional diarrhea, loss of taste perception","Dosage must be individualized. Based on clinical experience, dosages up to 500 mg/day can be given as a single daily dose. Dosages in excess of 500 mg/day should be administered in divided doses","https://www.accessdata.fda.gov/drugsatfda_docs/label/2004/19853s012,014lbl.pdf ",2,FALSE
+",3,TRUE,FALSE
+Levocarnitine,541-15-1,Levocarnitine (tosylate),TRUE,FALSE,FALSE,anti-inflammatory,,,,,,1,FALSE,FALSE
+Lovastatin,75330-75-5,Lovastatin,TRUE,TRUE,FALSE,kinase inhibitor,pan rab inhibitor,,,,,,FALSE,FALSE
+Lumateperone,313368-91-1,lumateperone (tosylate),TRUE,TRUE,FALSE,"symptomatic relief, protein of interest modulator",;gsk3b activator,,,,,,FALSE,TRUE
+Luteolin,491-70-3,Luteolin,TRUE,TRUE,FALSE,anti-inflammatory,,,,,,,FALSE,FALSE
+Melatonin,73-31-4,Melatonin,TRUE,TRUE,FALSE,kinase inhibitor,,,,,,,FALSE,FALSE
+Memantine,19982-08-2,,,,,increase dopamine signaling,,,,,,,,FALSE
+Metformin,657-24-9,Metformin,TRUE,TRUE,FALSE,anti-inflammatory,,,,,,,FALSE,FALSE
+Moclobemide,71320-77-9,Moclobemide,TRUE,TRUE,FALSE,kinase inhibitor,,,,,,,FALSE,FALSE
+Nortriptyline,72-69-5,Nortriptyline (hcl),TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE,FALSE
+Omaveloxolone,1474034-05-3,Omaveloxolone,TRUE,FALSE,FALSE,anti-inflammatory,,"No, Not established in <16 years old","Elevation of aminotransferases, Elevation of BNP, and Lipid abnormalities",150 mg (3 capsules) taken orally once daily,https://www.accessdata.fda.gov/drugsatfda_docs/label/2024/216718s002lbl.pdf,2,FALSE,FALSE
+Oxindole,59-48-3,Oxindole,TRUE,TRUE,TRUE,"kinase inhibitor, immunomodulators",,,,,,,FALSE,FALSE
+Penicillamine,52-67-5,D-penicillamine ,TRUE,TRUE,FALSE,anti-inflammatory,,"No, the efficacy in juvenile rheumatoid arthritis has not been established for children.","early and late rashes, fever, arthralgia, lymphadenopathy, anorexia, epigastric pain, nausea, vomiting, occasional diarrhea, loss of taste perception","Dosage must be individualized. Based on clinical experience, dosages up to 500 mg/day can be given as a single daily dose. Dosages in excess of 500 mg/day should be administered in divided doses","https://www.accessdata.fda.gov/drugsatfda_docs/label/2004/19853s012,014lbl.pdf ",2,FALSE,FALSE
 Phenylbutyric acid,1821-12-1,Sodium phenylbutyrate ,FALSE,FALSE,FALSE,neuroprotective,,Safety and efficacy has been established for adult and pediatric patients weighing 20 kg or greater and with a body surface area (BSA) of 1.2 m^2 or greater.,"menstrual dysfunction, decreased appetite, body odor, and bad taste or taste aversion",The recommended dosage of OLPRUVA for patients with urea cycle disorders is 9.9 −13 g/m2 /day orally. Divide the calculated total daily dose into three to six doses. Administer as three to six divided doses and take with food. The maximum dosage is 20 grams per day.,"https://www.drugs.com/history/olpruva.html https://www.accessdata.fda.gov/drugsatfda_docs/label/2022/214860s000lbl.pdf
-",,TRUE
-Pioglitazone,111025-46-8,,FALSE,FALSE,FALSE,protein of interest modulator,pik3c3 modulator,,,,,3,FALSE
-Pramipexole,104632-26-0,Pramipexole,TRUE,FALSE,FALSE,increase dopamine signaling,,,,,,2,FALSE
-Ripretinib,1442472-39-0,Ripretinib,TRUE,FALSE,FALSE,kinase inhibitor,,"No, not established","hair thinning or hair loss, tiredness, nausea, abdominal pain, constipation, muscle pain, diarrhea, decreased appetite, vomiting",The recommended dosage of QINLOCK is 150 mg orally once daily with or without food until disease progression or unacceptable toxicity.,https://www.accessdata.fda.gov/drugsatfda_docs/label/2020/213973s000lbl.pdf,3,FALSE
+",,TRUE,FALSE
+Phenytoin,57-41-0,Phenytoin,TRUE,TRUE,FALSE,symptomatic relief,,Yes,"nystagmus (eye movements that you can’t control), trouble with coordinated movements, such as walking, slurred speech, Drowsiness, Confusion, mild allergic reaction",The recommended starting dose of Dilantin in children is 5 mg per kg (mg/kg). This dose is divided into two or three doses each day. The average half-life of oral phenytoin is 22 hours.,https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=BasicSearch.process  https://www.medicalnewstoday.com/articles/drugs-dilantin#side-effects https://journals.sagepub.com/doi/pdf/10.1177/201010581302200307,2,TRUE,FALSE
+Pioglitazone,111025-46-8,,FALSE,FALSE,FALSE,protein of interest modulator,pik3c3 modulator,,,,,3,FALSE,FALSE
+Pitavastatin,147511-69-1,pitavistatin,TRUE,TRUE,FALSE,kinase inhibitor,jnk inhibitor,≥8 years (recommended starting dose: 2 mg PO qDay. May increase to 4 mg PO qDay if necessary) Safety and efficacy not established for children <8,"Back pain, difficulty with moving, joint pain, muscle ache, cramp, pain, or stiffness, pain in the arms and legs, swollen joints",The dose range for Livalo (Adults and children >8) is 1 to 4 mg orally once daily. The recommended starting dose is 2 mg and the maximum dose is 4 mg.,https://www.rxlist.com/livalo-drug.htm#indications https://reference.medscape.com/drug/livalo-zypitamag-pitavastatin-999209#4 https://www.mayoclinic.org/drugs-supplements/pitavastatin-oral-route/description/drg-20073137 https://pmc.ncbi.nlm.nih.gov/articles/PMC4263103/ https://www.ncbi.nlm.nih.gov/books/NBK542212/,1,TRUE,FALSE
+Pramipexole,104632-26-0,Pramipexole,TRUE,TRUE,FALSE,increase dopamine signaling,,,,,,2,FALSE,FALSE
+Pregnenolone,145-13-1,Pregnenolone,TRUE,TRUE,FALSE,increase neuroplasticity,,,,,,,FALSE,FALSE
+Purvalanol,212844-54-7,purvalanol a,TRUE,TRUE,FALSE,kinase inhibitor,cdk5 inhibitor,,,,,,FALSE,FALSE
+Resveratrol,501-36-0,Resveratrol,TRUE,TRUE,FALSE,anti-inflammatory,,,,,,,FALSE,FALSE
+Ripretinib,1442472-39-0,Ripretinib,TRUE,TRUE,FALSE,kinase inhibitor,,"No, not established","hair thinning or hair loss, tiredness, nausea, abdominal pain, constipation, muscle pain, diarrhea, decreased appetite, vomiting",The recommended dosage of QINLOCK is 150 mg orally once daily with or without food until disease progression or unacceptable toxicity.,https://www.accessdata.fda.gov/drugsatfda_docs/label/2020/213973s000lbl.pdf,3,FALSE,FALSE
+Rivastigmine,123441-03-2,rivastigmine (tartrate),TRUE,TRUE,FALSE,symptomatic relief,,,,,,1,FALSE,FALSE
+Ropinirole,91374-21-9,ropinirole (hcl),TRUE,TRUE,FALSE,increase dopamine signaling,,,,,,2,FALSE,FALSE
+Seliciclib,186692-46-6,Roscovitine,TRUE,TRUE,FALSE,kinase inhibitor,,,,,,,FALSE,FALSE
+Sertraline,79617-96-2,Sertraline HCL,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE,FALSE
 Simvastatin,79902-63-9,Simvastatin,FALSE,FALSE,FALSE,kinase inhibitor,pan rab inhibitor,"Yes, >10 years old","upper respiratory
 infection, headache, abdominal pain, constipation, and nausea","Adults: Recommended dosage is 20 mg to 40 mg once daily
 Pediatric Recommended dosage is 10 mg to 40 mg once daily","https://www.drugs.com/zocor.html 
-https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/019766s104lbl.pdf",1,TRUE
-Tiopronin,1953-02-2,Tiopronin ,TRUE,FALSE,FALSE,anti-inflammatory,,Indicated in pediatric patients weighing 20 kg or more,"Nausea, diarrhea or soft stools, oral ulcers, rash, fatigue, fever, arthralgia, proteinuria, and emesis.",Recommended initial dosage in adult patients is 800 mg/day. Recommended initial dosage in pediatric patients 20 kg and greater is 15 mg/kg/day,https://www.accessdata.fda.gov/drugsatfda_docs/label/2019/019569s006lbl.pdf,2,TRUE
-Tipepidine,5169-78-8,Tipepidine,TRUE,FALSE,FALSE,increase dopamine signaling,,No,"Drowsiness, vertigo, delirium, disorientation, loss of consciousness, and confusion.","The usual dose is 20 mg every 4–6 hours. However, the standard dosage for adults can vary, but it is generally taken two to three times a day, depending on the severity of the symptoms and the specific recommendations of the prescribing physician. For pediatric use, the dosage is adjusted according to the child's weight and age.",https://en.wikipedia.org/wiki/Tipepidine https://synapse.patsnap.com/article/what-is-tipepidine-hibenzate-used-for ,,FALSE
+https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/019766s104lbl.pdf",1,TRUE,FALSE
+Sirolimus,53123-88-9,Sirolimus (Rapamyacin),TRUE,TRUE,FALSE,protein of interest modulator,pik3c3 modulator,,,,,,FALSE,TRUE
+Tiopronin,1953-02-2,Tiopronin ,TRUE,TRUE,FALSE,anti-inflammatory,,Indicated in pediatric patients weighing 20 kg or more,"Nausea, diarrhea or soft stools, oral ulcers, rash, fatigue, fever, arthralgia, proteinuria, and emesis.",Recommended initial dosage in adult patients is 800 mg/day. Recommended initial dosage in pediatric patients 20 kg and greater is 15 mg/kg/day,https://www.accessdata.fda.gov/drugsatfda_docs/label/2019/019569s006lbl.pdf,2,TRUE,FALSE
+Tipepidine,5169-78-8,Tipepidine,TRUE,TRUE,FALSE,increase dopamine signaling,,No,"Drowsiness, vertigo, delirium, disorientation, loss of consciousness, and confusion.","The usual dose is 20 mg every 4–6 hours. However, the standard dosage for adults can vary, but it is generally taken two to three times a day, depending on the severity of the symptoms and the specific recommendations of the prescribing physician. For pediatric use, the dosage is adjusted according to the child's weight and age.",https://en.wikipedia.org/wiki/Tipepidine https://synapse.patsnap.com/article/what-is-tipepidine-hibenzate-used-for ,,FALSE,FALSE
 Ubidecarenone,303-98-0,Coenzyme Q10,FALSE,FALSE,FALSE,anti-inflammatory,,No,"High levels of liver enzymes, Nausea, Heartburn, Headache, Pain in the upper part of the abdomen, Dizziness, Rashes, Unable to fall sleep or stay asleep, Feeling very tired, Feeling irritable, Sensitive to light.",Typically 300 mg/day is used in clinical trial studies. Bioavailability is difficult to understand due to a lack of understanding of the processes determining the absorption and subsequent metabolism of coenzyme Q10.,"https://www.cancer.gov/about-cancer/treatment/cam/patient/coenzyme-q10-pdq 
-https://pmc.ncbi.nlm.nih.gov/articles/PMC7278738/",,FALSE
-Viloxazine,46817-91-8,viloxazine,TRUE,FALSE,FALSE,increase dopamine signaling,,Yes (6 years and older),"Pediatric 6-17 years old (Somnolence, decreased appetite, fatigue, nausea, vomiting, insomnia, and irritability) Adult 18+ (insomnia, headache, somnolence, fatigue, nausea, decreased appetite, dry mouth and constipation)","Pediatric patients:
-The recommended starting dosage for pediatric patients 6 to 11 years of age is 100 mg orally once daily. Dosage may be titrated in increments of 100 mg at weekly intervals to the maximum recommended dosage of 400 mg once daily, depending on response and tolerability.
-The recommended starting dosage for pediatric patients 12 to 17 years of age is 200 mg orally once daily. After 1 week, dosage may be titrated by an increment of 200 mg to the maximum recommended dosage of 400 mg once daily, depending on response and tolerability.
-Adult patients:
-The recommended starting dosage for adults is 200 mg orally once daily. Dosage may be titrated in increments of 200 mg weekly to the maximum recommended dosage of 600 mg once daily, depending on response and tolerability.",https://www.accessdata.fda.gov/drugsatfda_docs/label/2022/211964s003lbl.pdf#page=21,2,TRUE
-Vitamin E,59-02-9,Vitamin E,TRUE,FALSE,FALSE,anti-inflammatory,,Yes,"Diarrhea, Gas (flatulence), Nausea, Headache, Fatigue, Blurred vision, Increase in serum creatinine levels, Increased bleeding risk and hemorrhagic stroke",The Recommended Dietary Allowance is 15 mg for all adults in the US,"https://iubmb.onlinelibrary.wiley.com/doi/full/10.1002/iub.1993 
-https://www.mayoclinic.org/drugs-supplements-vitamin-e/art-20364144 
-https://www.medicinenet.com/vitamin_e/article.htm 
-https://pmc.ncbi.nlm.nih.gov/articles/PMC5745505/",1,TRUE
-Zandelisib,1401436-95-0,Ripretinib,TRUE,FALSE,FALSE,kinase inhibitor,pi3k,No,"diarrhea and intestinal inflammation, and rash",Pharmacologic activity was confirmed after administration of single ascending oral doses of 10 to 150 mg,"https://www.onclive.com/view/fda-discourages-pursuit-of-marketing-authorization-for-zandelisib-in-mzl-follicular-lymphoma 
-https://synapse.patsnap.com/article/what-is-zandelisib-used-for 
-https://pubmed.ncbi.nlm.nih.gov/30458930/",,FALSE
-Captopril,62571-86-2,Captopril,TRUE,TRUE,FALSE,anti-inflammatory,,Not established- however some reported literature,"proteinuria, renal insufficiency, renal failure, nephrotic syndrome, polyuria, oliguria, urinary frequency, Hypotension","In a 24-hour period, over 95 percent of the absorbed dose is eliminated in the urine; 40 to 50 percent is unchanged drug; most of the remainder is the disulfide dimer of captopril and captopril-cysteine disulfide. Approximately 25 to 30 percent of the circulating drug is bound to plasma proteins. The apparent elimination half-life for total radioactivity in blood is probably less than 3 hours.
-The initial dose of CAPOTEN (captopril tablets, USP) is 25 mg b.i.d. or t.i.d. The dose of CAPOTEN in hypertension usually does not exceed 50 mg t.i.d.","https://www.ncbi.nlm.nih.gov/books/NBK535386/ 
-https://www.accessdata.fda.gov/drugsatfda_docs/label/2017/018343s087lbl.pdf",2,FALSE
-Pitavastatin,147511-69-1,pitavistatin,TRUE,TRUE,FALSE,kinase inhibitor,jnk inhibitor,≥8 years (recommended starting dose: 2 mg PO qDay. May increase to 4 mg PO qDay if necessary) Safety and efficacy not established for children <8,"Back pain, difficulty with moving, joint pain, muscle ache, cramp, pain, or stiffness, pain in the arms and legs, swollen joints",The dose range for Livalo (Adults and children >8) is 1 to 4 mg orally once daily. The recommended starting dose is 2 mg and the maximum dose is 4 mg.,https://www.rxlist.com/livalo-drug.htm#indications https://reference.medscape.com/drug/livalo-zypitamag-pitavastatin-999209#4 https://www.mayoclinic.org/drugs-supplements/pitavastatin-oral-route/description/drg-20073137 https://pmc.ncbi.nlm.nih.gov/articles/PMC4263103/ https://www.ncbi.nlm.nih.gov/books/NBK542212/,1,TRUE
-Rivastigmine,123441-03-2,rivastigmine (tartrate),TRUE,TRUE,FALSE,symptomatic relief,,,,,,1,FALSE
+https://pmc.ncbi.nlm.nih.gov/articles/PMC7278738/",,FALSE,FALSE
 Valsartan,137862-53-4,Valsartan,TRUE,TRUE,FALSE,increase neuroplasticity,,Not established,"bloody urine, cold sweats, confusion, decreased frequency or amount of urine, difficult breathing, dizziness, faintness, or lightheadedness when getting up from a lying position, fainting, increased thirst, irregular heartbeat, loss of appetite","Peak plasma concentrations are reached 2 to 4 hours after dosing.
 Valsartan shows bi-exponential decay kinetics following intravenous administra-tion, with an average elimination half-life of about 6 hours. Absolute bioavailability for Diovan is about 25% (range 10%-35%). Food decreases the exposure (as measured by AUC) to valsartan by about 40% and peak plasma concentration (max by about 50%. AUC and Cmax values of valsartan increase approximately linearly with increasing dose over the clinical dosing range. Valsartan does not accumulate appreciably in plasma following repeated administration.","https://www.accessdata.fda.gov/drugsatfda_docs/label/2001/21283lbl.pdf 
 https://www.drugs.com/sfx/valsartan-side-effects.html 
-https://pmc.ncbi.nlm.nih.gov/articles/PMC8806495/ ",2,FALSE
-Alvocidib,146426-40-6,flavorpiridol (hcl),TRUE,TRUE,FALSE,kinase inhibitor,,,,,,,FALSE
-Carbamazepine,298-46-4,Carbamazepine,TRUE,TRUE,FALSE,symptomatic relief,,"Yes, CBZ elimination is more rapid in children, necessitating the need for higher mg/kg doses than are commonly employed in adults.","dizziness, loss of coordination, problems with walking; nausea, vomiting, or drowsiness","Usual adult therapeutic levels are between 4 and 12 µg/mL. Because Tegretol induces its own metabolism, the half-life is also variable. Autoinduction is completed after 3-5 weeks of a fixed dosing regimen. Initial half-life values range from 25-65 hours, decreasing to 12-17 hours on repeated doses.","https://pubmed.ncbi.nlm.nih.gov/1803802/#:~:text=Carbamazepine%20%28CBZ%29%20has%20become%20a%20commonly%20used%20antiepileptic,seizures%20but%20also%20for%20primary%20generalized%20tonic-clonic%20seizures. https://www.drugs.com/tegretol.html https://pubmed.ncbi.nlm.nih.gov/16412277/ ",2,TRUE
-Escitalopram,128196-01-0,escitalopram (oxalate) ,TRUE,TRUE,FALSE,symptomatic relief,,,,,,2,FALSE
-Guanfacine,29110-47-2,Guanfacine,TRUE,TRUE,FALSE,increase neuroplasticity,,"Yes, children >6+ years","Hypotension, bradycardia, and syncope, sedation, and somnolence",Guanfacine is readily absorbed and approximately 70% bound to plasma proteins independent of drug concentration. After oral administration the time to peak plasma concentration is approximately 5 hours in children and adolescents with ADHD.,https://www.accessdata.fda.gov/drugsatfda_docs/label/2009/022037lbl.pdf,2,TRUE
-Phenytoin,57-41-0,Phenytoin,TRUE,TRUE,FALSE,symptomatic relief,,Yes,"nystagmus (eye movements that you can’t control), trouble with coordinated movements, such as walking, slurred speech, Drowsiness, Confusion, mild allergic reaction",The recommended starting dose of Dilantin in children is 5 mg per kg (mg/kg). This dose is divided into two or three doses each day. The average half-life of oral phenytoin is 22 hours.,https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=BasicSearch.process  https://www.medicalnewstoday.com/articles/drugs-dilantin#side-effects https://journals.sagepub.com/doi/pdf/10.1177/201010581302200307,2,TRUE
-Ropinirole,91374-21-9,ropinirole (hcl),TRUE,TRUE,FALSE,increase dopamine signaling,,,,,,2,FALSE
+https://pmc.ncbi.nlm.nih.gov/articles/PMC8806495/ ",2,FALSE,FALSE
+Venlafaxine,93413-69-5,Venlafaxine,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE,FALSE
+Viloxazine,46817-91-8,viloxazine,TRUE,TRUE,FALSE,increase dopamine signaling,,Yes (6 years and older),"Pediatric 6-17 years old (Somnolence, decreased appetite, fatigue, nausea, vomiting, insomnia, and irritability) Adult 18+ (insomnia, headache, somnolence, fatigue, nausea, decreased appetite, dry mouth and constipation)","Pediatric patients:
+The recommended starting dosage for pediatric patients 6 to 11 years of age is 100 mg orally once daily. Dosage may be titrated in increments of 100 mg at weekly intervals to the maximum recommended dosage of 400 mg once daily, depending on response and tolerability.
+The recommended starting dosage for pediatric patients 12 to 17 years of age is 200 mg orally once daily. After 1 week, dosage may be titrated by an increment of 200 mg to the maximum recommended dosage of 400 mg once daily, depending on response and tolerability.
+Adult patients:
+The recommended starting dosage for adults is 200 mg orally once daily. Dosage may be titrated in increments of 200 mg weekly to the maximum recommended dosage of 600 mg once daily, depending on response and tolerability.",https://www.accessdata.fda.gov/drugsatfda_docs/label/2022/211964s003lbl.pdf#page=21,2,TRUE,FALSE
 Vitamin C,50-81-7,L-absorbic acid,TRUE,TRUE,FALSE,anti-inflammatory,,"Yes, Toddlers ages 1 to 3 years old: 15 mg/day. Children ages 4 to 8 years old: 25 mg/day. (Safe upper limit varies by age: 1-3 years: 400 mg/day, 4-8 years: 650 mg/day, 9-13 years: 1200 mg/day, 14-18 years: 1800 mg/day)","Nausea, vomiting and diarrhea, Heartburn, Stomach cramps or bloating, Fatigue and sleepiness, or sometimes insomnia, Headache, Skin flushing","Approximately 70%–90% of vitamin C is absorbed at moderate intakes of 30–180 mg/day. However, at doses above 1 g/day, absorption falls to less than 50% and absorbed, unmetabolized ascorbic acid is excreted in the urine","https://ods.od.nih.gov/factsheets/VitaminC-HealthProfessional/?uid=f2614a5120dbas16 
 https://www.mayoclinic.org/drugs-supplements-vitamin-c/art-20363932 
-https://pmc.ncbi.nlm.nih.gov/articles/PMC508490/",1,TRUE
-3β-Methoxypregnenolone,511-26-2,map4343,TRUE,TRUE,TRUE,symptomatic relief,,,,,,,FALSE
-Albuterol,18559-94-9,salbutamol,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE
-Amantadine,768-94-5,Amantadine,TRUE,TRUE,FALSE,symptomatic relief,symptomatic relief,,,,,,FALSE
-Ambroxol,18683-91-5,Ambroxol,FALSE,TRUE,FALSE,anti-inflammatory,,,,,,,FALSE
-AT-7519,844442-38-2,AT-7519,TRUE,TRUE,FALSE,kinase inhibitor,,,,,,,FALSE
-Baclofen,1134-47-0,Baclofen,FALSE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE
-Baicalein,491-67-8,Baicalein,TRUE,TRUE,FALSE,anti-inflammatory,,,,,,,FALSE
-Buspirone,36505-84-7,Buspirone,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE
-Carbidopa AND Levodopa,,Carbidopa + Levodopa,FALSE,TRUE,TRUE,"symptomatic relief, increase dopamine signaling",,,,,,,FALSE
-Cefoperazone,62893-19-0,Cefoperazone,TRUE,TRUE,FALSE,"protein of interest modulator, immunomodulators, antimicrobial",arf6 modulator;;antibiotic,,,,,,FALSE
-Curcumin,458-37-7,Curcumin,TRUE,TRUE,FALSE,neuroprotective,,,,,,,FALSE
-Cysteamine,60-23-1,,FALSE,TRUE,FALSE,anti-inflammatory,,,,,,1,FALSE
-Dantrolene,7261-97-4,Dantrolene,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE
-Daprodustat,960539-70-2,Daprodustat,TRUE,TRUE,FALSE,protein of interest modulator,arf6 modulator,,,,,,FALSE
-Dinaciclib,779353-01-4,Dinaciclib,TRUE,TRUE,FALSE,kinase inhibitor,,,,,,,FALSE
-Donepezil,120014-06-4,Donepezil,TRUE,TRUE,FALSE,increase neuroplasticity,,,,,,,FALSE
-Everolimus,159351-69-6,Everolimus,TRUE,TRUE,FALSE,protein of interest modulator,mtor inhibitor,,,,,,FALSE
-Fluvoxamine,54739-18-3,Fluvoxamine,FALSE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE
-Gambogic acid,2752-65-0,Gambogic Acid,TRUE,TRUE,TRUE,anti-inflammatory,,,,,,,FALSE
-Glycyrrhizic acid,1405-86-3,Glycyrrhizic acid,TRUE,TRUE,FALSE,anti-inflammatory,,,,,,,FALSE
-Huperzine A,102518-79-6,Huperzine A,TRUE,TRUE,FALSE,protein of interest modulator,"trkb agonist, anticholinesterase inhibitor",,,,,,FALSE
-Hydroxychloroquine,118-42-3,hyroxychlorquine,TRUE,TRUE,FALSE,neuroprotective,,,,,,,FALSE
-Istradefylline,155270-99-8,Istradefylline,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE
-Ketoconazole,65277-42-1,Ketoconazole,FALSE,TRUE,FALSE,antimicrobial,antifungal,,,,,,FALSE
-Lovastatin,75330-75-5,Lovastatin,TRUE,TRUE,FALSE,kinase inhibitor,pan rab inhibitor,,,,,,FALSE
-Lumateperone,313368-91-1,lumateperone (tosylate),TRUE,TRUE,FALSE,"symptomatic relief, protein of interest modulator",;gsk3b activator,,,,,,FALSE
-Luteolin,491-70-3,Luteolin,FALSE,TRUE,FALSE,anti-inflammatory,,,,,,,FALSE
-Melatonin,73-31-4,Melatonin,FALSE,TRUE,FALSE,kinase inhibitor,,,,,,,FALSE
-Metformin,657-24-9,Metformin,FALSE,TRUE,FALSE,anti-inflammatory,,,,,,,FALSE
-Moclobemide,71320-77-9,Moclobemide,TRUE,TRUE,FALSE,kinase inhibitor,,,,,,,FALSE
-Nortriptyline,72-69-5,Nortriptyline (hcl),TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE
-Oxindole,59-48-3,Oxindole,TRUE,TRUE,TRUE,"kinase inhibitor, immunomodulators",,,,,,,FALSE
-Pregnenolone,145-13-1,Pregnenolone,TRUE,TRUE,FALSE,increase neuroplasticity,,,,,,,FALSE
-Purvalanol,212844-54-7,purvalanol a,TRUE,TRUE,FALSE,kinase inhibitor,cdk5 inhibitor,,,,,,FALSE
-Resveratrol,501-36-0,Resveratrol,FALSE,TRUE,FALSE,anti-inflammatory,,,,,,,FALSE
-Seliciclib,186692-46-6,Roscovitine,FALSE,TRUE,FALSE,kinase inhibitor,,,,,,,FALSE
-Sertraline,79617-96-2,Sertraline HCL,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE
-Sirolimus,53123-88-9,Sirolimus (Rapamyacin),FALSE,TRUE,FALSE,protein of interest modulator,pik3c3 modulator,,,,,,FALSE
-Venlafaxine,93413-69-5,Venlafaxine,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE
-Zonisamide,68291-97-4,Zonisamide,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE
-Memantine,19982-08-2,,,,,increase dopamine signaling,,,,,,,
+https://pmc.ncbi.nlm.nih.gov/articles/PMC508490/",1,TRUE,FALSE
+Vitamin E,59-02-9,Vitamin E,TRUE,TRUE,FALSE,anti-inflammatory,,Yes,"Diarrhea, Gas (flatulence), Nausea, Headache, Fatigue, Blurred vision, Increase in serum creatinine levels, Increased bleeding risk and hemorrhagic stroke",The Recommended Dietary Allowance is 15 mg for all adults in the US,"https://iubmb.onlinelibrary.wiley.com/doi/full/10.1002/iub.1993 
+https://www.mayoclinic.org/drugs-supplements-vitamin-e/art-20364144 
+https://www.medicinenet.com/vitamin_e/article.htm 
+https://pmc.ncbi.nlm.nih.gov/articles/PMC5745505/",1,TRUE,FALSE
+Zandelisib,1401436-95-0,Ripretinib,TRUE,FALSE,FALSE,kinase inhibitor,pi3k,No,"diarrhea and intestinal inflammation, and rash",Pharmacologic activity was confirmed after administration of single ascending oral doses of 10 to 150 mg,"https://www.onclive.com/view/fda-discourages-pursuit-of-marketing-authorization-for-zandelisib-in-mzl-follicular-lymphoma 
+https://synapse.patsnap.com/article/what-is-zandelisib-used-for 
+https://pubmed.ncbi.nlm.nih.gov/30458930/",,FALSE,FALSE
+Zonisamide,68291-97-4,Zonisamide,TRUE,TRUE,FALSE,symptomatic relief,,,,,,,FALSE,FALSE

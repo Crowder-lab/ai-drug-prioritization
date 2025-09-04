@@ -11,14 +11,19 @@
   `(+= (get ~df ~col-name) ~add))
 
 (with [f (open "data/translator_drug_list.json" "r")]
-  (setv data (pd.read_json f)))
+  (setv data (pd.read-json f)))
 (setcol data "score" 0)
 
 ;;; exclude completely for these
 (setv very-large-number 1e9)
-(ap-each
-  #("Bioavailability" "Blood Brain Barrier" "Human Intestinal Absorption")
-  (-= (ncut data.loc (< (get data it) 0.5) "score") very-large-number))
+(-=
+  (ncut data.loc
+    (&
+      (< (get data "Blood Brain Barrier") 0.5)
+      (< (get data "P-glycoprotein Inhibition") 0.5))
+    "score")
+  very-large-number)
+(-= (ncut data.loc (< (get data "Human Intestinal Absorption") 0.5) "score") very-large-number)
 
 ;;; 1: FDA approved
 (addcol data "score" (.fillna (get data "FDA Approved") False))
@@ -55,29 +60,42 @@
     1000))
 (addcol data "score" (get data "Less than $1000"))
 
+;;; 1: No liver injury
+(+= (ncut data.loc (< (get data "Drug Induced Liver Injury") 0.5) "score") 1)
+
 ;;; sort by score
-(data.sort_values
+(data.sort-values
   :by "score"
   :ascending False
   :inplace True)
 
-;;; separate by search terms
-(setcol data "search term"
-  (.apply (get data "search term")
-    (fn [x]
-      (if (isinstance x str)
-        [x]
-        x)))) ; isinstance list
-(setv unique-terms
-  (sfor
-    term-list (get data "search term")
-    term term-list
-    term))
-(for [term unique-terms]
-  (setcol data term
-    (.apply (get data "search term") (fn [l] (in term l)))))
+;;; move the relevant columns to the front
+(setv cols-to-move
+  ["DrugBank Name"
+   "score"
+   "FDA Approved" 
+   "Less than $100"
+   "Less than $1000"
+   "Blood Brain Barrier"
+   "P-glycoprotein Inhibition"
+   "Human Intestinal Absorption"
+   "Drug Induced Liver Injury"
+   "search term"])
+(setv data 
+  (get data 
+    (+ 
+      cols-to-move 
+      (lfor 
+        col (. data columns) 
+        :if (not-in col cols-to-move) 
+        col))))
 
-;;; save
-(for [term unique-terms]
-  (with [f (open f"data/ranked/{term}_ranked.csv" "w")]
-    (.to_csv (get data (get data term)) f)))
+;;; remove original list data
+(with [f (open "data/ranked.csv" "r")]
+  (setv original-data (pd.read-csv f)))
+(setv original-mask
+  (.isin (get data "DrugBank Name") (get original-data "DrugBank Name")))
+(setv data (get data (= original-mask False)))
+
+(with [f (open "data/translator_ranked.csv" "w")]
+  (.to-csv data f :index False))
