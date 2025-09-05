@@ -13,6 +13,15 @@
 (defmacro addcol [df col-name add]
   `(+= (get ~df ~col-name) ~add))
 
+(defn unwrap-list [x]
+;; [x] -> x
+;; [ ] -> None
+  (if (isinstance x list)
+    (if (> (len x) 0)
+      (get x 0)
+      None)
+    x))
+
 (defn is-safe [chatgpt-output]
   (setv correct-regexp (re.compile r"<explain>.*</explain>.*<answer>.*</answer>" re.DOTALL))
   (setv answer-regexp (re.compile r"<answer>(.*)</answer>" re.DOTALL))
@@ -40,11 +49,11 @@
     (set.intersection
       (set (. initial-data columns))
       (set (. translator-data columns)))))
-(setv data (pd.concat [(get initial-data same-cols) (get translator-data same-cols)] :ignore-index True))
+(setv data (pd.concat #((get initial-data same-cols) (get translator-data same-cols)) :ignore-index True))
 
-(setcol data "Pediatric Safety" False)
-(for [#(drug-name answer) (zip drug-names answers)]
-  (setv (ncut data.loc (= (get data "DrugBank Name") drug-name) "Pediatric Safety") (is-safe (get answer "answer"))))
+;(setcol data "Pediatric Safety" False)
+;(for [#(drug-name answer) (zip drug-names answers)]
+;  (setv (ncut data.loc (= (get data "DrugBank Name") drug-name) "Pediatric Safety") (is-safe (get answer "answer"))))
 
 (setcol data "score" 0)
 
@@ -58,14 +67,20 @@
     "score")
   very-large-number)
 (-= (ncut data.loc (< (get data "Human Intestinal Absorption") 0.5) "score") very-large-number)
+(-= (ncut data.loc (> (get data "Drug Induced Liver Injury") 0.5) "score") very-large-number)
 
 ;;; 1: FDA approved
-(addcol data "score" (.fillna (get data "FDA Approved") False))
+(addcol data "score" 
+  (.fillna 
+    (.apply
+      (get data "DrugBank:FDA Approved")
+      unwrap-list)
+    False))
 
-;;; 1: cost less than $100
-(setcol data "Less than $100"
+;;; 1: cost less than $500
+(setcol data "Less than $500"
   (<
-    (.apply (get data "Prices")
+    (.apply (get data "DrugBank:Prices")
       (fn [l]
         (when (isinstance l str)
           (setv l [l]))
@@ -75,35 +90,14 @@
           (map (fn [s] (float (s.removesuffix "USD"))))
           (tuple)
           (max))))
-    100))
-(addcol data "score" (get data "Less than $100"))
-
-;;; 1: cost less than $1000
-(setcol data "Less than $1000"
-  (<
-    (.apply (get data "Prices")
-      (fn [l]
-        (when (isinstance l str)
-          (setv l [l]))
-        (when (or (is l None) (= (len l) 0))
-          (setv l ["InfUSD"]))
-        (->> l
-          (map (fn [s] (float (s.removesuffix "USD"))))
-          (tuple)
-          (max))))
-    1000))
-(addcol data "score" (get data "Less than $1000"))
+    500))
+(addcol data "score" (get data "Less than $500"))
 
 ;;; 1: Safe in children
-(addcol data "score" (get data "Pediatric Safety"))
-
-;;; 1: No liver injury
-(+= (ncut data.loc (< (get data "Drug Induced Liver Injury") 0.5) "score") 1)
-;;; -1: Liver injury
-(-= (ncut data.loc (> (get data "Drug Induced Liver Injury") 0.5) "score") 1)
+;(addcol data "score" (get data "Pediatric Safety"))
 
 ;;; override clinician recommended to top
-(setv (ncut data.loc (get data "Clinician Recommendation") "score") very-large-number)
+;(setv (ncut data.loc (get data "Clinician Recommendation") "score") very-large-number)
 
 ;;; sort by score
 (data.sort-values

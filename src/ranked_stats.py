@@ -16,14 +16,25 @@ def _():
 @app.cell
 def _(pd):
     combined = pd.read_csv("data/ranked.csv")
-    cols = ["DrugBank Name", "score", "FDA Approved", "Less than $100", "Less than $1000", "Blood Brain Barrier", "P-glycoprotein Inhibition", "Human Intestinal Absorption", "Drug Induced Liver Injury", "Pediatric Safety"]
-    result = combined[cols].sort_values(["score", "DrugBank Name"], ascending=[False, True]).drop_duplicates("DrugBank Name").reset_index()
+    cols = ["Main Name", "DrugBank:Main Name", "score", "Clinician Recommendation", "DrugBank:FDA Approved", "Less than $500", "Blood Brain Barrier", "P-glycoprotein Inhibition", "Human Intestinal Absorption", "Drug Induced Liver Injury"]
+    result = combined[cols].sort_values(["score", "Main Name"], ascending=[False, True]).drop_duplicates("Main Name").reset_index()
+    result["DrugBank:FDA Approved"] = result["DrugBank:FDA Approved"].astype(bool)
     return (result,)
 
 
 @app.cell
 def _(result):
+    clin_recs = result["Clinician Recommendation"]
     result
+    return (clin_recs,)
+
+
+@app.cell
+def _(clin_recs, result):
+    the_2s = result["score"] >= 2
+    to_check_safety = the_2s | clin_recs
+    print(to_check_safety.sum())
+    result[to_check_safety]
     return
 
 
