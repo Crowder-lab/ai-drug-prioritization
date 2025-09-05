@@ -148,7 +148,7 @@
 
 
 (defclass DataAugmenter []
-  (meth __init__ [@filename]
+  (meth __init__ [@filename @id-col-name @id-type-col-name @name-col-name]
     (setv @drug-list None)
     (setv @admet-models None))
 
@@ -202,16 +202,16 @@
     (with [f (open filename "w")]
       (@drug-list.to-json f :orient "records")))
 
-  (meth match-drugbank [filename id-col-name id-type-col-name name-col-name]
+  (meth match-drugbank [filename]
     (when (is @drug-list None)
       (raise (ValueError "drug-list is not defined. Call load-drug-queries before match-drugbank.")))
     ;; make sure the provided columnss are strings and not lists of strings
-    (setv id-col      (.apply (get @drug-list id-col-name)      @unwrap-list))
-    (setv id-type-col (.apply (get @drug-list id-type-col-name) @unwrap-list))
-    (setv name-col    (.apply (get @drug-list name-col-name)    @unwrap-list))
-    (setv (get @drug-list id-col-name)      id-col)
-    (setv (get @drug-list id-type-col-name) id-type-col)
-    (setv (get @drug-list name-col-name)    name-col)
+    (setv id-col      (.apply (get @drug-list @id-col-name)      @unwrap-list))
+    (setv id-type-col (.apply (get @drug-list @id-type-col-name) @unwrap-list))
+    (setv name-col    (.apply (get @drug-list @name-col-name)    @unwrap-list))
+    (setv (get @drug-list @id-col-name)      id-col)
+    (setv (get @drug-list @id-type-col-name) id-type-col)
+    (setv (get @drug-list @name-col-name)    name-col)
     ;; column making for what we're about to store
     ;;                 variable name       column title
     (create-var-column @all-names-column   "DrugBank:All Names")
@@ -243,19 +243,35 @@
       (@add-to-column @price-column      drugbank.prices new-matches element)
       (@add-to-column @smiles-column     drugbank.smiles new-matches element)
       (@add-to-column @unii-column       drugbank.unii new-matches element))
-    (setv (get @drug-list @unii-column) (.apply (get @drug-list @unii-column) @unwrap-list)))
+    (setv (get @drug-list @name-column) (.apply (get @drug-list @name-column) @unwrap-list)))
 
-  (meth deduplicate [name-col-name]
+  (meth make-main-name-col []
     (when (is @drug-list None)
       (raise (ValueError "drug-list is not defined. Call load-drug-queries before deduplicate.")))
     (when (not-in "DrugBank:Main Name" @drug-list.columns)
       (raise (ValueError "DrugBank data does not exist yet. Run match-drugbank to create it.")))
-    (setv unii-column (.notna (get @drug-list @unii-column)))
-    (setv no-unii-rows (get @drug-list (- unii-column)))
-    (setv unii-rows (get @drug-list unii-column))
+    ;; find out which rows have a filled DrugBank: Main Name
+    (setv name-column (.notna (get @drug-list @name-column)))
+    (setv (get @drug-list "Main Name") None)
+    ;; set from DrugBank if possible, otherwise fall back to provided name
+    (setv (ncut @drug-list.loc (- name-column) "Main Name") (get @drug-list @name-col-name))
+    (setv (ncut @drug-list.loc name-column "Main Name") (get @drug-list @name-column))
+    (setv (get @drug-list "Main Name") (.str.lower (get @drug-list "Main Name")))
+    (print f"MISSING NAMES: {(.sum (.isna (get @drug-list "Main Name")))}"))
+
+  (meth deduplicate []
+    (when (is @drug-list None)
+      (raise (ValueError "drug-list is not defined. Call load-drug-queries before deduplicate.")))
+    (when (not-in "DrugBank:Main Name" @drug-list.columns)
+      (raise (ValueError "DrugBank data does not exist yet. Run match-drugbank to create it.")))
+    (when (not-in "Main Name" @drug-list.columns)
+      (raise (ValueError "Combined 'Main Name' column does not exist yet. Run make-main-name-col to create it.")))
+    (setv name-column (.notna (get @drug-list "Main Name")))
+    (setv no-name-rows (get @drug-list (- name-column)))
+    (setv name-rows (get @drug-list name-column))
     (setv deduplicated-rows
-      (-> unii-rows
-        (.groupby @unii-column)
+      (-> name-rows
+        (.groupby "Main Name")
         (.agg
           (fn [x]
             ;; make a list out of all the items in x
@@ -275,13 +291,11 @@
               ;; else return the whole set
               True z)))
         (.reset-index)))
-    ;; make a record of what was deduplicated
-    (setv merged-list (pd.concat #(no-unii-rows deduplicated-rows) :ignore-index True))
+    ;; print a record of what was deduplicated
+    (setv merged-list (pd.concat #(no-name-rows deduplicated-rows) :ignore-index True))
     (print "DRUGS REMOVED IN DEDUPLICATION:")
-    (print (get (get @drug-list (- (.isin (get @drug-list name-col-name) (get merged-list name-col-name)))) [name-col-name @all-names-column @unii-column @match-found-column]))
-    (setv @drug-list merged-list)
-    ;; unwrap smiles to pass into predict-admet
-    (setv (get @drug-list @smiles-column) (.apply (get @drug-list @smiles-column) @unwrap-list)))
+    (print (get (get @drug-list (- (.isin (get @drug-list "Main Name") (get merged-list "Main Name")))) ["Main Name" @name-col-name @all-names-column @name-column @match-found-column]))
+    (setv @drug-list merged-list))
 
   (meth predict-admet []
     (when (is @drug-list None)
@@ -291,6 +305,8 @@
     (when (not-in "DrugBank:SMILES" @drug-list.columns)
       (raise (ValueError "SMILES data does not exist yet. Run match-drugbank to create it.")))
     (RDLogger.DisableLog "rdApp.*")
+    ;; unwrap smiles
+    (setv (get @drug-list @smiles-column) (.apply (get @drug-list @smiles-column) @unwrap-list))
     (setv smiles-mask (.notna (get @drug-list @smiles-column)))
     (setv smiles (ncut @drug-list.loc smiles-mask @smiles-column))
     (setv molecules (smiles.apply Chem.MolFromSmiles))
@@ -314,8 +330,8 @@
 
 (when (= __name__ "__main__")
   (setv augmenter
-    (-> (DataAugmenter "data/src/drug_list.csv")
-    ;(-> (DataAugmenter "data/translator_drugs.json")
+    (-> (DataAugmenter "data/src/drug_list.csv" "CAS Number" "id_type" "Canonical Name")
+    ;(-> (DataAugmenter "data/translator_drugs.json" "result_id" "id_type" "result_name")
       (.load-drug-queries)
       (.load-admet-models
         {"Blood Brain Barrier" "data/admet/bbb_martins-0.916-0.002.dump"
@@ -324,10 +340,9 @@
          "Drug Induced Liver Injury" "data/admet/dili-0.918-0.005.dump"})))
   (setv (get augmenter.drug-list "id_type") "cas-number")
   (doto augmenter
-    (.match-drugbank "data/src/drugbank.xml" "CAS Number" "id_type" "Canonical Name")
-    ;(.match-drugbank "data/src/drugbank.xml" "result_id" "id_type" "result_name")
-    (.deduplicate "Canonical Name")
-    ;(.deduplicate "result_name")
+    (.match-drugbank "data/src/drugbank.xml")
+    (.make-main-name-col)
+    (.deduplicate)
     (.predict-admet)
     (.save-drug-info "data/drug_list.json")))
     ;(.save-drug-info "data/translator_drug_list.json")))
