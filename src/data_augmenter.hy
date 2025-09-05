@@ -148,6 +148,10 @@
 
 
 (defclass DataAugmenter []
+  (meth __init__ [@filename]
+    (setv @drug-list None)
+    (setv @admet-models None))
+
   (defmacro create-var-column [var-name col-name]
     `(do
        (setv ~var-name ~col-name)
@@ -164,15 +168,13 @@
           x))))
 
   (meth unwrap-list [x]
+  ;; [x] -> x
+  ;; [ ] -> None
     (if (isinstance x list)
       (if (> (len x) 0)
         (get x 0)
         None)
       x))
-
-  (meth __init__ [@filename]
-    (setv @drug-list None)
-    (setv @admet-models None))
 
   (meth load-drug-queries []
     (cond
@@ -203,49 +205,57 @@
   (meth match-drugbank [filename id-col-name id-type-col-name name-col-name]
     (when (is @drug-list None)
       (raise (ValueError "drug-list is not defined. Call load-drug-queries before match-drugbank.")))
-    ;; make sure the cols are strings and not lists of strings
-    (setv id-col (.apply (get @drug-list id-col-name) @unwrap-list))
-    (setv (get @drug-list id-col-name) id-col)
+    ;; make sure the provided columnss are strings and not lists of strings
+    (setv id-col      (.apply (get @drug-list id-col-name)      @unwrap-list))
     (setv id-type-col (.apply (get @drug-list id-type-col-name) @unwrap-list))
+    (setv name-col    (.apply (get @drug-list name-col-name)    @unwrap-list))
+    (setv (get @drug-list id-col-name)      id-col)
     (setv (get @drug-list id-type-col-name) id-type-col)
-    (setv name-col (.apply (get @drug-list name-col-name) @unwrap-list))
-    (setv (get @drug-list name-col-name) name-col)
-    ;; tedious column making for what we're about to store
-    ;; variable name, column title
-    (create-var-column all-names-column  "All Names")
-    (create-var-column cas-column        "CAS Registry Number")
-    (create-var-column fda-column        "FDA Approved")
-    (create-var-column indication-column "Indication")
-    (create-var-column mechanism-column  "Mechanism")
-    (create-var-column name-column       "DrugBank Name")
-    (create-var-column price-column      "Prices")
-    (create-var-column smiles-column     "SMILES")
-    (create-var-column unii-column       "UNII")
+    (setv (get @drug-list name-col-name)    name-col)
+    ;; column making for what we're about to store
+    ;;                 variable name       column title
+    (create-var-column @all-names-column   "DrugBank:All Names")
+    (create-var-column @cas-column         "DrugBank:CAS Registry Number")
+    (create-var-column @fda-column         "DrugBank:FDA Approved")
+    (create-var-column @indication-column  "DrugBank:Indication")
+    (create-var-column @mechanism-column   "DrugBank:Mechanism")
+    (create-var-column @name-column        "DrugBank:Main Name")
+    (create-var-column @price-column       "DrugBank:Prices")
+    (create-var-column @smiles-column      "DrugBank:SMILES")
+    (create-var-column @unii-column        "DrugBank:UNII")
+    ;; make a column to say if this drug has already been matched to DrugBank
+    (create-var-column @match-found-column "DrugBank:Match Found")
+    (setv (get @drug-list @match-found-column) False)
     ;; go through matches and add info to the correct columns
     (setv drugbank (DrugBank filename id-col id-type-col name-col))
     (for [#(matches element) (drugbank.get-matches)]
-      (@add-to-column all-names-column drugbank.all-names matches element)
-      (@add-to-column cas-column drugbank.cas-number matches element)
-      (@add-to-column fda-column drugbank.fda-approval matches element)
-      (@add-to-column indication-column drugbank.indication matches element)
-      (@add-to-column mechanism-column drugbank.mechanism matches element)
-      (@add-to-column name-column drugbank.name matches element)
-      (@add-to-column price-column drugbank.prices matches element)
-      (@add-to-column smiles-column drugbank.smiles matches element)
-      (@add-to-column unii-column drugbank.unii matches element))
-    (setv id-col (.apply (get @drug-list id-col-name) @unwrap-list))
-    (setv (get @drug-list id-col-name) id-col)
-    (setv id-type-col (.apply (get @drug-list id-type-col-name) @unwrap-list))
-    (setv (get @drug-list id-type-col-name) id-type-col))
+      ;; only match things once
+      (setv new-matches (& matches (- (get @drug-list @match-found-column))))
+      (setv (get @drug-list @match-found-column) (| new-matches (get @drug-list @match-found-column)))
+      ;; add new data to matched rows
+      ;;              column             drugbank function
+      (@add-to-column @all-names-column  drugbank.all-names new-matches element)
+      (@add-to-column @cas-column        drugbank.cas-number new-matches element)
+      (@add-to-column @fda-column        drugbank.fda-approval new-matches element)
+      (@add-to-column @indication-column drugbank.indication new-matches element)
+      (@add-to-column @mechanism-column  drugbank.mechanism new-matches element)
+      (@add-to-column @name-column       drugbank.name new-matches element)
+      (@add-to-column @price-column      drugbank.prices new-matches element)
+      (@add-to-column @smiles-column     drugbank.smiles new-matches element)
+      (@add-to-column @unii-column       drugbank.unii new-matches element))
+    (setv (get @drug-list @unii-column) (.apply (get @drug-list @unii-column) @unwrap-list)))
 
-  (meth deduplicate [id-col-name]
+  (meth deduplicate [name-col-name]
     (when (is @drug-list None)
       (raise (ValueError "drug-list is not defined. Call load-drug-queries before deduplicate.")))
-    (when (not-in "DrugBank Name" @drug-list.columns)
-      (raise (ValueError "ID data does not exist yet. Run match-drugbank to create it.")))
-    (setv @drug-list
-      (-> @drug-list
-        (.groupby id-col-name)
+    (when (not-in "DrugBank:Main Name" @drug-list.columns)
+      (raise (ValueError "DrugBank data does not exist yet. Run match-drugbank to create it.")))
+    (setv unii-column (.notna (get @drug-list @unii-column)))
+    (setv no-unii-rows (get @drug-list (- unii-column)))
+    (setv unii-rows (get @drug-list unii-column))
+    (setv deduplicated-rows
+      (-> unii-rows
+        (.groupby @unii-column)
         (.agg
           (fn [x]
             ;; make a list out of all the items in x
@@ -264,19 +274,25 @@
               (= (len z) 1) (.pop z)
               ;; else return the whole set
               True z)))
-        (.reset-index))))
-    ;(print (get @drug-list (= (get @drug-list "Canonical Name") "Oxindole"))))
+        (.reset-index)))
+    ;; make a record of what was deduplicated
+    (setv merged-list (pd.concat #(no-unii-rows deduplicated-rows) :ignore-index True))
+    (print "DRUGS REMOVED IN DEDUPLICATION:")
+    (print (get (get @drug-list (- (.isin (get @drug-list name-col-name) (get merged-list name-col-name)))) [name-col-name @all-names-column @unii-column @match-found-column]))
+    (setv @drug-list merged-list)
+    ;; unwrap smiles to pass into predict-admet
+    (setv (get @drug-list @smiles-column) (.apply (get @drug-list @smiles-column) @unwrap-list)))
 
   (meth predict-admet []
     (when (is @drug-list None)
       (raise (ValueError "drug-list is not defined. Call load-drug-queries before predict-admet.")))
     (when (is @admet-models None)
       (raise (ValueError "admet-models is not defined. Call load-admet-models before predict-admet.")))
-    (when (not-in "SMILES" @drug-list.columns)
+    (when (not-in "DrugBank:SMILES" @drug-list.columns)
       (raise (ValueError "SMILES data does not exist yet. Run match-drugbank to create it.")))
     (RDLogger.DisableLog "rdApp.*")
-    (setv smiles-mask (.notna (get @drug-list "SMILES")))
-    (setv smiles (ncut @drug-list.loc smiles-mask "SMILES"))
+    (setv smiles-mask (.notna (get @drug-list @smiles-column)))
+    (setv smiles (ncut @drug-list.loc smiles-mask @smiles-column))
     (setv molecules (smiles.apply Chem.MolFromSmiles))
     (setv molecules-mask (.notna molecules))
     (setv fingerprints (@get-fingerprints (get molecules molecules-mask)))
@@ -310,8 +326,8 @@
   (doto augmenter
     (.match-drugbank "data/src/drugbank.xml" "CAS Number" "id_type" "Canonical Name")
     ;(.match-drugbank "data/src/drugbank.xml" "result_id" "id_type" "result_name")
-    (.deduplicate "CAS Number")
-    ;(.deduplicate "result_id")
+    (.deduplicate "Canonical Name")
+    ;(.deduplicate "result_name")
     (.predict-admet)
     (.save-drug-info "data/drug_list.json")))
     ;(.save-drug-info "data/translator_drug_list.json")))
