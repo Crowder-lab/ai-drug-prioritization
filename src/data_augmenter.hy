@@ -330,19 +330,18 @@
 
 (when (= __name__ "__main__")
   (setv augmenter
-    ;(-> (DataAugmenter "data/src/drug_list.csv" "CAS Number" "id_type" "Canonical Name")
-    (-> (DataAugmenter "data/translator_drugs.json" "result_id" "id_type" "result_name")
+    (-> (DataAugmenter "data/src/drug_list.csv" "result_id" "id_type" "Canonical Name")
+    ;(-> (DataAugmenter "data/translator_drugs.json" "result_id" "id_type" "result_name")
       (.load-drug-queries)
       (.load-admet-models
         {"Blood Brain Barrier" "data/admet/bbb_martins-0.916-0.002.dump"
          "P-glycoprotein Inhibition" "data/admet/pgp_broccatelli-0.938-0.0.dump"
          "Human Intestinal Absorption" "data/admet/hia_hou-0.989-0.001.dump"
          "Drug Induced Liver Injury" "data/admet/dili-0.918-0.005.dump"})))
-  ;(setv (get augmenter.drug-list "id_type") "cas-number")
   (doto augmenter
     (.match-drugbank "data/src/drugbank.xml")
     (.make-main-name-col)
     (.deduplicate)
     (.predict-admet)
-    ;(.save-drug-info "data/drug_list.json")))
-    (.save-drug-info "data/translator_drug_list.json")))
+    (.save-drug-info "data/drug_list.json")))
+    ;(.save-drug-info "data/translator_drug_list.json")))
