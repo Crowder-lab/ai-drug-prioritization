@@ -51,9 +51,9 @@
       (set (. translator-data columns)))))
 (setv data (pd.concat #((get initial-data same-cols) (get translator-data same-cols)) :ignore-index True))
 
-;(setcol data "Pediatric Safety" False)
-;(for [#(drug-name answer) (zip drug-names answers)]
-;  (setv (ncut data.loc (= (get data "DrugBank Name") drug-name) "Pediatric Safety") (is-safe (get answer "answer"))))
+(setcol data "Pediatric Safety" False)
+(for [#(drug-name answer) (zip drug-names answers)]
+  (setv (ncut data.loc (= (get data "DrugBank:Main Name") drug-name) "Pediatric Safety") (is-safe (get answer "answer"))))
 
 (setcol data "score" 0)
 
@@ -94,7 +94,7 @@
 (addcol data "score" (get data "Less than $500"))
 
 ;;; 1: Safe in children
-;(addcol data "score" (get data "Pediatric Safety"))
+(addcol data "score" (get data "Pediatric Safety"))
 
 ;;; override clinician recommended to top
 ;(setv (ncut data.loc (get data "Clinician Recommendation") "score") very-large-number)
