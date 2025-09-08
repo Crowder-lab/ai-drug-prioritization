@@ -17,7 +17,7 @@ def _():
 def _():
     original_cols_before_ranking = ["Main Name", "DrugBank:Main Name", "Clinician Recommendation", "DrugBank:Match Found", "DrugBank:FDA Approved", "DrugBank:Prices", "Blood Brain Barrier", "P-glycoprotein Inhibition", "Human Intestinal Absorption", "Drug Induced Liver Injury"]
     translator_cols_before_ranking = ["Main Name", "DrugBank:Main Name", "DrugBank:Match Found", "DrugBank:FDA Approved", "DrugBank:Prices", "Blood Brain Barrier", "P-glycoprotein Inhibition", "Human Intestinal Absorption", "Drug Induced Liver Injury"]
-    cols = ["Main Name", "DrugBank:Main Name", "score", "Clinician Recommendation", "DrugBank:FDA Approved", "Less than $500",  "Pediatric Safety", "Blood Brain Barrier", "P-glycoprotein Inhibition", "Human Intestinal Absorption", "Drug Induced Liver Injury"]
+    cols = ["Main Name", "DrugBank:Main Name", "score", "Clinician Recommendation", "DrugBank:FDA Approved", "Less than $500",  "Pediatric Safety", "Blood Brain Barrier", "P-glycoprotein Inhibition", "Human Intestinal Absorption", "Drug Induced Liver Injury", "Data Source"]
     return cols, original_cols_before_ranking, translator_cols_before_ranking
 
 
@@ -60,7 +60,7 @@ def _(pd, remove_newlines, translator_cols_before_ranking):
 @app.cell
 def _(cols, pd):
     combined = pd.read_csv("data/ranked.csv")
-    result = combined[cols].drop_duplicates("Main Name").sort_values(["score", "Main Name"], ascending=[False, True])
+    result = combined[cols].sort_values("Data Source").drop_duplicates("Main Name", keep="first").sort_values(["score", "Main Name"], ascending=[False, True])
     result["DrugBank:FDA Approved"] = result["DrugBank:FDA Approved"].fillna(False).astype(bool)
     return (result,)
 

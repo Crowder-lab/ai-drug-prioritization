@@ -44,6 +44,8 @@
 (setcol translator-data "Screened" False)
 
 ;;; combine drug data
+(setcol initial-data    "Data Source" "original")
+(setcol translator-data "Data Source" "translator")
 (setv same-cols
   (list
     (set.intersection
