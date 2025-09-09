@@ -250,12 +250,12 @@
       (raise (ValueError "drug-list is not defined. Call load-drug-queries before deduplicate.")))
     (when (not-in "DrugBank:Main Name" @drug-list.columns)
       (raise (ValueError "DrugBank data does not exist yet. Run match-drugbank to create it.")))
-    ;; find out which rows have a filled DrugBank: Main Name
+    ;; find out which rows have a filled DrugBank: Main Name (not NA)
     (setv name-column (.notna (get @drug-list @name-column)))
     (setv (get @drug-list "Main Name") None)
     ;; set from DrugBank if possible, otherwise fall back to provided name
-    (setv (ncut @drug-list.loc (- name-column) "Main Name") (get @drug-list @name-col-name))
-    (setv (ncut @drug-list.loc name-column "Main Name") (get @drug-list @name-column))
+    (setv (ncut @drug-list.loc (- name-column) "Main Name") (get @drug-list @name-col-name)) ; fill from provided names
+    (setv (ncut @drug-list.loc    name-column  "Main Name") (get @drug-list @name-column))   ; fill from DrugBank name
     (setv (get @drug-list "Main Name") (.str.lower (get @drug-list "Main Name")))
     (print f"MISSING NAMES: {(.sum (.isna (get @drug-list "Main Name")))}"))
 
@@ -266,11 +266,15 @@
       (raise (ValueError "DrugBank data does not exist yet. Run match-drugbank to create it.")))
     (when (not-in "Main Name" @drug-list.columns)
       (raise (ValueError "Combined 'Main Name' column does not exist yet. Run make-main-name-col to create it.")))
+    ;; boolean column of drugs that have a "Main Name"
     (setv name-column (.notna (get @drug-list "Main Name")))
+    ;; actual rows of the drug list where "Main Name" is NA
     (setv no-name-rows (get @drug-list (- name-column)))
+    ;; actual rows of the drug list where "Main Name" is not NA
     (setv name-rows (get @drug-list name-column))
     (setv deduplicated-rows
       (-> name-rows
+        ;; group by the "Main Name" of each drug
         (.groupby "Main Name")
         (.agg
           (fn [x]
@@ -291,10 +295,17 @@
               ;; else return the whole set
               True z)))
         (.reset-index)))
-    ;; print a record of what was deduplicated
+    ;; recombine the NA name rows with the deduplicated rows (stack them on top of each other)
     (setv merged-list (pd.concat #(no-name-rows deduplicated-rows) :ignore-index True))
+    ;; print a record of what was deduplicated
     (print "DRUGS REMOVED IN DEDUPLICATION:")
-    (print (get (get @drug-list (- (.isin (get @drug-list "Main Name") (get merged-list "Main Name")))) ["Main Name" @name-col-name @all-names-column @name-column @match-found-column]))
+    (print
+      (get
+        (get
+          @drug-list
+          (- (.isin (get @drug-list "Main Name") (get merged-list "Main Name")))) ; drugs from before dedup that aren't in merged list
+        ["Main Name" @name-col-name @all-names-column @name-column @match-found-column]))
+    ;; set the actual drug-list to the recombined rows from above
     (setv @drug-list merged-list))
 
   (meth predict-admet []
@@ -330,18 +341,18 @@
 
 (when (= __name__ "__main__")
   (setv augmenter
-    (-> (DataAugmenter "data/src/drug_list.csv" "result_id" "id_type" "Canonical Name")
-    ;(-> (DataAugmenter "data/translator_drugs.json" "result_id" "id_type" "result_name")
+    ;(-> (DataAugmenter "data/src/drug_list.csv" "result_id" "id_type" "Canonical Name"))
+    (-> (DataAugmenter "data/translator_drugs.json" "result_id" "id_type" "result_name")
       (.load-drug-queries)
       (.load-admet-models
-        {"Blood Brain Barrier" "data/admet/bbb_martins-0.916-0.002.dump"
-         "P-glycoprotein Inhibition" "data/admet/pgp_broccatelli-0.938-0.0.dump"
+        {"Blood Brain Barrier"         "data/admet/bbb_martins-0.916-0.002.dump"
+         "P-glycoprotein Inhibition"   "data/admet/pgp_broccatelli-0.938-0.0.dump"
          "Human Intestinal Absorption" "data/admet/hia_hou-0.989-0.001.dump"
-         "Drug Induced Liver Injury" "data/admet/dili-0.918-0.005.dump"})))
+         "Drug Induced Liver Injury"   "data/admet/dili-0.918-0.005.dump"})))
   (doto augmenter
     (.match-drugbank "data/src/drugbank.xml")
     (.make-main-name-col)
     (.deduplicate)
     (.predict-admet)
-    (.save-drug-info "data/drug_list.json")))
-    ;(.save-drug-info "data/translator_drug_list.json")))
+    ;(.save-drug-info "data/drug_list.json")))
+    (.save-drug-info "data/translator_drug_list.json")))
