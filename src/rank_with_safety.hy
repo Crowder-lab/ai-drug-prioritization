@@ -36,26 +36,26 @@
   (setv drug-names (list (map (fn [s] (cut s None -1)) (.readlines f)))))
 
 ;;; open augmented drug data
-(with [f (open "data/drug_list.json" "r")]
-  (setv initial-data (pd.read-json f)))
-(with [f (open "data/translator_drug_list.json" "r")]
-  (setv translator-data (pd.read-json f)))
-(setcol translator-data "Clinician Recommendation" False)
-(setcol translator-data "Screened" False)
+(with [f (open "data/mayo/drug_list.json" "r")]
+  (setv data (pd.read-json f)))
+;(with [f (open "data/translator_drug_list.json" "r")]
+;  (setv translator-data (pd.read-json f)))
+;(setcol translator-data "Clinician Recommendation" False)
+;(setcol translator-data "Screened" False)
 
 ;;; combine drug data
-(setcol initial-data    "Data Source" "original")
-(setcol translator-data "Data Source" "translator")
-(setv same-cols
-  (list
-    (set.intersection
-      (set (. initial-data columns))
-      (set (. translator-data columns)))))
-(setv data (pd.concat #((get initial-data same-cols) (get translator-data same-cols)) :ignore-index True))
+;(setcol initial-data    "Data Source" "original")
+;(setcol translator-data "Data Source" "translator")
+;(setv same-cols
+;  (list
+;    (set.intersection
+;      (set (. initial-data columns))
+;      (set (. translator-data columns)))))
+;(setv data (pd.concat #((get initial-data same-cols) (get translator-data same-cols)) :ignore-index True))
 
-(setcol data "Pediatric Safety" False)
-(for [#(drug-name answer) (zip drug-names answers)]
-  (setv (ncut data.loc (= (get data "DrugBank:Main Name") drug-name) "Pediatric Safety") (is-safe (get answer "answer"))))
+;(setcol data "Pediatric Safety" False)
+;(for [#(drug-name answer) (zip drug-names answers)]
+;  (setv (ncut data.loc (= (get data "DrugBank:Main Name") drug-name) "Pediatric Safety") (is-safe (get answer "answer"))))
 
 (setcol data "score" 0)
 
@@ -96,10 +96,7 @@
 (addcol data "score" (get data "Less than $500"))
 
 ;;; 1: Safe in children
-(addcol data "score" (get data "Pediatric Safety"))
-
-;;; override clinician recommended to top
-;(setv (ncut data.loc (get data "Clinician Recommendation") "score") very-large-number)
+;(addcol data "score" (get data "Pediatric Safety"))
 
 ;;; sort by score
 (data.sort-values
@@ -107,5 +104,5 @@
   :ascending False
   :inplace True)
 
-(with [f (open "data/ranked.csv" "w")]
+(with [f (open "data/mayo/ranked.csv" "w")]
   (.to-csv data f :index False))

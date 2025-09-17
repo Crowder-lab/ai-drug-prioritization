@@ -342,7 +342,8 @@
 (when (= __name__ "__main__")
   (setv augmenter
     ;(-> (DataAugmenter "data/src/drug_list.csv" "result_id" "id_type" "Canonical Name"))
-    (-> (DataAugmenter "data/translator_drugs.json" "result_id" "id_type" "result_name")
+    ;(-> (DataAugmenter "data/translator_drugs.json" "result_id" "id_type" "result_name"))
+    (-> (DataAugmenter "data/mayo/drugs.csv" "result_id" "id_type" "Name")
       (.load-drug-queries)
       (.load-admet-models
         {"Blood Brain Barrier"         "data/admet/bbb_martins-0.916-0.002.dump"
@@ -355,4 +356,5 @@
     (.deduplicate)
     (.predict-admet)
     ;(.save-drug-info "data/drug_list.json")))
-    (.save-drug-info "data/translator_drug_list.json")))
+    ;(.save-drug-info "data/translator_drug_list.json")
+    (.save-drug-info "data/mayo/drug_list.json")))
