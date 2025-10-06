@@ -210,23 +210,27 @@ def get_edge(row_result_data, edge_id):
     ##############################
 
     # GET EDGES FROM SUPPORT GRAPH
-    if has_supportgraphs == True:
+    if has_supportgraphs:
         for support_graph_id in support_graphs_ids:
+            support_edge = None  # initialize before try
             try:
                 aux_graph = auxiliary_graphs[support_graph_id]
-                support_edges = aux_graph["edges"]
-                # print(f"support_edges = {support_edges}")
+                support_edges = aux_graph.get("edges", [])
 
                 for support_edge in support_edges:
-                    # print(f"support_edge = {support_edge}")
                     get_edge(row_result_data, support_edge)
+
             except Exception as e:
-                print("aux_graph error")
-                print(f"edge ID = {support_graph_id}")
-                print(f"row_result_data = {row_result_data}")
-                print(f"support_edge = {support_edge}")
-                print(f"An unexpected error occurred: {e}")
-                sys.exit(1)
+                print("\n⚠️ aux_graph error detected")
+                print(f"  edge ID: {support_graph_id}")
+                print(f"  row_result_data: {row_result_data}")
+                if "support_edge" in locals():
+                    print(f"  support_edge: {support_edge}")
+                else:
+                    print("  support_edge: None (loop not started)")
+                print(f"  Exception: {e}")
+                print("  ➤ Skipping this auxiliary graph and continuing...\n")
+                continue  # don't exit the runtime
 
 
 ##############################
