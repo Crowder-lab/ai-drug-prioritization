@@ -15,12 +15,12 @@ def _():
 
 @app.cell
 def _(pd):
-    cols = ["DrugBank Name", "score", "FDA Approved", "Less than $100", "Less than $1000", "Blood Brain Barrier", "P-glycoprotein Inhibition", "Human Intestinal Absorption", "Drug Induced Liver Injury"]
-    translator = pd.read_csv("data/translator_ranked.csv")[cols]
-    initial = pd.read_csv("data/ranked.csv")[cols + ["Pediatric Safety", "Screened", "Clinician Recommendation"]]
-    initial["score"] -= initial["Pediatric Safety"].fillna(False)
-    initial = initial.drop("Pediatric Safety", axis=1)
-    return initial, translator
+    cols = ["DrugBank Name", "score", "FDA Approved", "Less than $500", "Blood Brain Barrier", "P-glycoprotein Inhibition", "Human Intestinal Absorption", "Drug Induced Liver Injury"]
+    translator = pd.read_csv("data/ranked.csv")[cols]
+    # initial = pd.read_csv("data/ranked.csv")[cols + ["Pediatric Safety", "Screened", "Clinician Recommendation"]]
+    # initial["score"] -= initial["Pediatric Safety"].fillna(False)
+    # initial = initial.drop("Pediatric Safety", axis=1)
+    return (translator,)
 
 
 @app.cell

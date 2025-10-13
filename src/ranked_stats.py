@@ -60,6 +60,7 @@ def _(pd, remove_newlines, translator_cols_before_ranking):
 @app.cell
 def _(cols, pd):
     combined = pd.read_csv("data/ranked.csv")
+    combined["Pediatric Safety"] = None
     result = combined[cols].sort_values("Data Source").drop_duplicates("Main Name", keep="first").sort_values(["score", "Main Name"], ascending=[False, True])
     result["DrugBank:FDA Approved"] = result["DrugBank:FDA Approved"].fillna(False).astype(bool)
     return (result,)
@@ -80,6 +81,12 @@ def _(result):
     print("Passes HIA + BBB       :", len(bbb))
     dili = bbb[(bbb["Drug Induced Liver Injury"] > 0.5) | bbb["DrugBank:Main Name"].isna()]
     print("Passes HIA + BBB + DILI:", len(dili))
+    return
+
+
+@app.cell
+def _(result):
+    ((result["score"] >= 1) & result["DrugBank:FDA Approved"] & result["Less than $500"]).sum()
     return
 
 
