@@ -21,20 +21,13 @@ def is_safe(chatgpt_output):
 
 with open("data/pubchat/answers.json", "r") as f:
     answers = json.load(f)
-with open("data/drug_list.json", "r") as f:
-    initial_data = pd.read_json(f)
 with open("data/translator_drug_list.json", "r") as f:
-    translator_data = pd.read_json(f)
+    data = pd.read_json(f)
 
-translator_data["Clinician Recommendation"] = False
-translator_data["Screened"] = False
-initial_data["Data Source"] = "original"
-translator_data["Data Source"] = "translator"
-
-same_cols = list(set.intersection(set(initial_data.columns), set(translator_data.columns)))
-data = pd.concat((initial_data[same_cols], translator_data[same_cols]), ignore_index=True)
-
+data["Clinician Recommendation"] = False
+data["Screened"] = False
 data["Pediatric Safety"] = False
+
 for answer in answers:
     data.loc[data["DrugBank:Main Name"] == answer["name"], "Pediatric Safety"] = is_safe(answer["answer"])
 
