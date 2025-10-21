@@ -30,10 +30,8 @@
     False))
 
 ;;; open extra data
-(with [f (open "data/src/pubmed_answers.json" "r")]
+(with [f (open "data/pubchat/answers.json" "r")]
   (setv answers (json.load f)))
-(with [f (open "../PubMed-Embedding-Project/drug_names.txt" "r")]
-  (setv drug-names (list (map (fn [s] (cut s None -1)) (.readlines f)))))
 
 ;;; open augmented drug data
 (with [f (open "data/drug_list.json" "r")]
@@ -54,8 +52,8 @@
 (setv data (pd.concat #((get initial-data same-cols) (get translator-data same-cols)) :ignore-index True))
 
 (setcol data "Pediatric Safety" False)
-(for [#(drug-name answer) (zip drug-names answers)]
-  (setv (ncut data.loc (= (get data "DrugBank:Main Name") drug-name) "Pediatric Safety") (is-safe (get answer "answer"))))
+(for [answer answers]
+  (setv (ncut data.loc (= (get data "DrugBank:Main Name") (get answer "name")) "DrugBank:Main Name") (is-safe (get answer "answer"))))
 
 (setcol data "score" 0)
 
