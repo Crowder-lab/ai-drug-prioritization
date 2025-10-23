@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.14.10"
+__generated_with = "0.17.0"
 app = marimo.App(
     width="medium",
     css_file="/Users/dunb/.config/marimo/default.css",
@@ -9,16 +9,18 @@ app = marimo.App(
 
 @app.cell
 def _():
+    import json
+
     import pandas as pd
-    return (pd,)
+    return json, pd
 
 
 @app.cell
 def _():
     original_cols_before_ranking = ["Main Name", "DrugBank:Main Name", "Clinician Recommendation", "DrugBank:Match Found", "DrugBank:FDA Approved", "DrugBank:Prices", "Blood Brain Barrier", "P-glycoprotein Inhibition", "Human Intestinal Absorption", "Drug Induced Liver Injury"]
     translator_cols_before_ranking = ["Main Name", "DrugBank:Main Name", "DrugBank:Match Found", "DrugBank:FDA Approved", "DrugBank:Prices", "Blood Brain Barrier", "P-glycoprotein Inhibition", "Human Intestinal Absorption", "Drug Induced Liver Injury"]
-    cols = ["Main Name", "DrugBank:Main Name", "score", "Clinician Recommendation", "DrugBank:FDA Approved", "Less than $500",  "Pediatric Safety", "Blood Brain Barrier", "P-glycoprotein Inhibition", "Human Intestinal Absorption", "Drug Induced Liver Injury", "Data Source"]
-    return cols, original_cols_before_ranking, translator_cols_before_ranking
+    cols = ["Main Name", "DrugBank:Main Name", "score", "Clinician Recommendation", "DrugBank:FDA Approved", "Less than $500",  "Pediatric Safety", "Blood Brain Barrier", "P-glycoprotein Inhibition", "Human Intestinal Absorption", "Drug Induced Liver Injury"]
+    return cols, translator_cols_before_ranking
 
 
 @app.cell
@@ -38,16 +40,6 @@ def _(pd):
 
 
 @app.cell
-def _(original_cols_before_ranking, pd, remove_newlines):
-    original_list = pd.read_json("data/drug_list.json")
-    for to_be_booled in ("DrugBank:FDA Approved", "Have It", "Screened", "Not In DrugBank", "ED Pediatric Safety"):
-        original_list[to_be_booled] = original_list[to_be_booled].fillna(False).astype(bool)
-    remaining_original_cols = [column for column in original_list.columns if column not in original_cols_before_ranking]
-    remove_newlines(original_list[original_cols_before_ranking + remaining_original_cols])
-    return
-
-
-@app.cell
 def _(pd, remove_newlines, translator_cols_before_ranking):
     translator_list = pd.read_json("data/translator_drug_list.json")
     for to_be_booled_2 in ("DrugBank:FDA Approved",):
@@ -60,7 +52,7 @@ def _(pd, remove_newlines, translator_cols_before_ranking):
 @app.cell
 def _(cols, pd):
     combined = pd.read_csv("data/ranked.csv")
-    result = combined[cols].sort_values("Data Source").drop_duplicates("Main Name", keep="first").sort_values(["score", "Main Name"], ascending=[False, True])
+    result = combined[cols].sort_values(["score", "Main Name"], ascending=[False, True])
     result["DrugBank:FDA Approved"] = result["DrugBank:FDA Approved"].fillna(False).astype(bool)
     return (result,)
 
@@ -84,11 +76,39 @@ def _(result):
 
 
 @app.cell
+def _(result):
+    ((result["score"] >= 1) & result["DrugBank:FDA Approved"] & result["Less than $500"]).sum()
+    return
+
+
+@app.cell
 def _(clin_recs, result):
     the_2s = result["score"] >= 2
     to_check_safety = the_2s | clin_recs
     print(to_check_safety.sum())
     result[to_check_safety]
+    return (to_check_safety,)
+
+
+@app.cell
+def _(json, result, to_check_safety):
+    with open("data/pubchat/answers.json", "r") as f:
+        pubchat = json.load(f)
+    pubchat_names = set(map(lambda output: output["name"].strip().lower(), pubchat))
+    for name in result[to_check_safety]["DrugBank:Main Name"]:
+        if name.strip().lower() not in pubchat_names:
+            print(f"ERROR: {name} missing from PubChat results")
+    return
+
+
+@app.cell
+def _(clin_recs, result):
+    post_pediatric_2s = (result["score"] - result["Pediatric Safety"]) >= 2
+    post_pediatric_safety_check = post_pediatric_2s | clin_recs
+    print(post_pediatric_safety_check.sum())
+    post_pediatric_result = result.copy(deep=True)
+    post_pediatric_result["score"] -= post_pediatric_result["Pediatric Safety"]
+    post_pediatric_result
     return
 
 
