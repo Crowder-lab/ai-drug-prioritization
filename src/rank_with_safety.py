@@ -69,4 +69,3 @@ data["score"] += data["Pediatric Safety"]
 data.sort_values(by="score", ascending=False, inplace=True)
 with open("data/ranked.csv", "w") as f:
     data.to_csv(f, index=False)
-
