@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.17.0"
+__generated_with = "0.14.10"
 app = marimo.App(
     width="medium",
     css_file="/Users/dunb/.config/marimo/default.css",
@@ -60,6 +60,7 @@ def _(cols, pd):
 @app.cell
 def _(result):
     clin_recs = result["Clinician Recommendation"]
+    print(clin_recs.sum())
     result.reset_index()
     return (clin_recs,)
 

@@ -43,6 +43,16 @@ class DrugBank:
 
     def check_match(self, element):
         matches = pd.Series(False, index=self.ids.index)
+
+        test_names = self.all_names(element)
+        if "baclofen" in test_names[0] or "baclofen" in test_names[1]:
+            print(test_names)
+            print(self.chebi(element))
+
+        if "baclofen hydrochloride" in test_names[0] or "baclofen hydrochloride" in test_names[1]:
+            print(test_names)
+            print(self.chebi(element))
+
         for id_type, id_func in self.get_ids.items():
             id_val = id_func(element)
             if id_val is None:
