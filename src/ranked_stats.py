@@ -42,6 +42,7 @@ def _(pd):
 @app.cell
 def _(pd, remove_newlines, translator_cols_before_ranking):
     translator_list = pd.read_json("data/translator_drug_list.json")
+    print((translator_list["DrugBank:Match Found"] == True).sum())
     for to_be_booled_2 in ("DrugBank:FDA Approved",):
         translator_list[to_be_booled_2] = translator_list[to_be_booled_2].fillna(False).astype(bool)
     remaining_translator_cols = [column for column in translator_list.columns if column not in translator_cols_before_ranking]

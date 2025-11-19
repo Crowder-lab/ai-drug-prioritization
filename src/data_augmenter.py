@@ -1,5 +1,6 @@
-#!/usr/bin/env uv run
+#!/usr/bin/env -S uv run
 import xml.etree.ElementTree as ET
+from typing import Literal
 
 import catboost as cb
 import numpy as np
@@ -14,7 +15,7 @@ import maplight_gnn
 class DrugBank:
     namespaces = {"": "http://www.drugbank.ca"}
 
-    def __init__(self, filename, ids, id_types, names):
+    def __init__(self, filename: str, ids: pd.Series, id_types: pd.Series, names: pd.Series):
         self.filename = filename
         self.ids = ids
         self.id_types = id_types
@@ -30,28 +31,20 @@ class DrugBank:
             "unii": self.unii,
         }
 
-    def get_matches(self):
+    def get_matches(self, match_type: Literal["id", "name"]):
+        check_match = self.check_id_match if match_type == "id" else self.check_name_match
         for _, element in tqdm(ET.iterparse(self.filename, ["end"])):
             if element.tag[24:None:None] != "drug":
                 continue
 
-            matches = self.check_match(element)
+            matches = check_match(element)
             if not matches.any():
                 continue
 
             yield (matches, element)
 
-    def check_match(self, element):
+    def check_id_match(self, element):
         matches = pd.Series(False, index=self.ids.index)
-
-        test_names = self.all_names(element)
-        if "baclofen" in test_names[0] or "baclofen" in test_names[1]:
-            print(test_names)
-            print(self.chebi(element))
-
-        if "baclofen hydrochloride" in test_names[0] or "baclofen hydrochloride" in test_names[1]:
-            print(test_names)
-            print(self.chebi(element))
 
         for id_type, id_func in self.get_ids.items():
             id_val = id_func(element)
@@ -62,6 +55,15 @@ class DrugBank:
             id_val_matches = self.ids == id_val
             id_full_matches = id_type_matches & id_val_matches
             matches = matches | id_full_matches
+
+        return matches
+
+    def check_name_match(self, element):
+        matches = pd.Series(False, index=self.ids.index)
+
+        for names in self.all_names(element):
+            matches = matches | self.names.isin(names)
+
         return matches
 
     def all_names(self, element):
@@ -211,79 +213,96 @@ class DataAugmenter:
 
     def save_drug_info(self, filename):
         if self.drug_list is None:
-            raise ValueError("drug-list must be loaded first.")
-            _hy_anon_var_17 = None
-        else:
-            _hy_anon_var_17 = None
-        _hy_anon_var_18 = None
+            raise ValueError("drug_list must be loaded first.")
+
         with open(filename, "w") as f:
-            _hy_anon_var_18 = self.drug_list.to_json(f, orient="records", indent=2)
-        return _hy_anon_var_18
+            return self.drug_list.to_json(f, orient="records", indent=2)
 
     def match_drugbank(self, filename):
         if self.drug_list is None:
-            raise ValueError("drug-list is not defined. Call load-drug-queries before match-drugbank.")
-            _hy_anon_var_19 = None
-        else:
-            _hy_anon_var_19 = None
-        id_col = self.drug_list[self.id_col_name].apply(self.unwrap_list)
+            raise ValueError("drug_list is not defined. Call load_drug_queries before match_drugbank.")
+
+        # fmt: off
+        id_col      = self.drug_list[self.id_col_name     ].apply(self.unwrap_list)
         id_type_col = self.drug_list[self.id_type_col_name].apply(self.unwrap_list)
-        name_col = self.drug_list[self.name_col_name].apply(self.unwrap_list)
-        self.drug_list[self.id_col_name] = id_col
+        name_col    = self.drug_list[self.name_col_name   ].apply(self.unwrap_list)
+        self.drug_list[self.id_col_name]      = id_col
         self.drug_list[self.id_type_col_name] = id_type_col
-        self.drug_list[self.name_col_name] = name_col
-        self.all_names_column = "DrugBank:All Names"
-        self.drug_list[self.all_names_column] = self.drug_list.apply(lambda _: list(), axis=1)
-        self.cas_column = "DrugBank:CAS Registry Number"
-        self.drug_list[self.cas_column] = self.drug_list.apply(lambda _: list(), axis=1)
-        self.fda_column = "DrugBank:FDA Approved"
-        self.drug_list[self.fda_column] = self.drug_list.apply(lambda _: list(), axis=1)
-        self.indication_column = "DrugBank:Indication"
-        self.drug_list[self.indication_column] = self.drug_list.apply(lambda _: list(), axis=1)
-        self.mechanism_column = "DrugBank:Mechanism"
-        self.drug_list[self.mechanism_column] = self.drug_list.apply(lambda _: list(), axis=1)
-        self.name_column = "DrugBank:Main Name"
-        self.drug_list[self.name_column] = self.drug_list.apply(lambda _: list(), axis=1)
-        self.price_column = "DrugBank:Prices"
-        self.drug_list[self.price_column] = self.drug_list.apply(lambda _: list(), axis=1)
-        self.smiles_column = "DrugBank:SMILES"
-        self.drug_list[self.smiles_column] = self.drug_list.apply(lambda _: list(), axis=1)
-        self.unii_column = "DrugBank:UNII"
-        self.drug_list[self.unii_column] = self.drug_list.apply(lambda _: list(), axis=1)
+        self.drug_list[self.name_col_name]    = name_col
+
+        self.all_names_column   = "DrugBank:All Names"
+        self.cas_column         = "DrugBank:CAS Registry Number"
+        self.fda_column         = "DrugBank:FDA Approved"
+        self.indication_column  = "DrugBank:Indication"
+        self.mechanism_column   = "DrugBank:Mechanism"
+        self.name_column        = "DrugBank:Main Name"
+        self.price_column       = "DrugBank:Prices"
+        self.smiles_column      = "DrugBank:SMILES"
+        self.unii_column        = "DrugBank:UNII"
         self.match_found_column = "DrugBank:Match Found"
-        self.drug_list[self.match_found_column] = self.drug_list.apply(lambda _: list(), axis=1)
+
+        self.drug_list[self.all_names_column]   = self.drug_list.apply(lambda _: list(), axis=1)
+        self.drug_list[self.cas_column]         = self.drug_list.apply(lambda _: list(), axis=1)
+        self.drug_list[self.fda_column]         = self.drug_list.apply(lambda _: list(), axis=1)
+        self.drug_list[self.indication_column]  = self.drug_list.apply(lambda _: list(), axis=1)
+        self.drug_list[self.mechanism_column]   = self.drug_list.apply(lambda _: list(), axis=1)
+        self.drug_list[self.name_column]        = self.drug_list.apply(lambda _: list(), axis=1)
+        self.drug_list[self.price_column]       = self.drug_list.apply(lambda _: list(), axis=1)
+        self.drug_list[self.smiles_column]      = self.drug_list.apply(lambda _: list(), axis=1)
+        self.drug_list[self.unii_column]        = self.drug_list.apply(lambda _: list(), axis=1)
         self.drug_list[self.match_found_column] = False
+        # fmt: on
+
+        # match by id since that's more important
         drugbank = DrugBank(filename, id_col, id_type_col, name_col)
-        for matches, element in drugbank.get_matches():
+        for matches, element in drugbank.get_matches(match_type="id"):
             new_matches = matches & -self.drug_list[self.match_found_column]
-            self.drug_list[self.match_found_column] = new_matches | self.drug_list[self.match_found_column]
-            self.add_to_column(self.all_names_column, drugbank.all_names, new_matches, element)
-            self.add_to_column(self.cas_column, drugbank.cas_number, new_matches, element)
-            self.add_to_column(self.fda_column, drugbank.fda_approval, new_matches, element)
-            self.add_to_column(self.indication_column, drugbank.indication, new_matches, element)
-            self.add_to_column(self.mechanism_column, drugbank.mechanism, new_matches, element)
-            self.add_to_column(self.name_column, drugbank.name, new_matches, element)
-            self.add_to_column(self.price_column, drugbank.prices, new_matches, element)
-            self.add_to_column(self.smiles_column, drugbank.smiles, new_matches, element)
-            self.add_to_column(self.unii_column, drugbank.unii, new_matches, element)
+            self.drug_list[self.match_found_column] |= new_matches
+
+            # fmt: off
+            self.add_to_column(self.all_names_column,  drugbank.all_names,    new_matches, element)
+            self.add_to_column(self.cas_column,        drugbank.cas_number,   new_matches, element)
+            self.add_to_column(self.fda_column,        drugbank.fda_approval, new_matches, element)
+            self.add_to_column(self.indication_column, drugbank.indication,   new_matches, element)
+            self.add_to_column(self.mechanism_column,  drugbank.mechanism,    new_matches, element)
+            self.add_to_column(self.name_column,       drugbank.name,         new_matches, element)
+            self.add_to_column(self.price_column,      drugbank.prices,       new_matches, element)
+            self.add_to_column(self.smiles_column,     drugbank.smiles,       new_matches, element)
+            self.add_to_column(self.unii_column,       drugbank.unii,         new_matches, element)
+            # fmt: on
+
+        # match on name if there wasn't an id match
+        drugbank = DrugBank(filename, id_col, id_type_col, name_col)
+        for matches, element in drugbank.get_matches(match_type="name"):
+            new_matches = matches & -self.drug_list[self.match_found_column]
+            self.drug_list[self.match_found_column] |= new_matches
+
+            # fmt: off
+            self.add_to_column(self.all_names_column,  drugbank.all_names,    new_matches, element)
+            self.add_to_column(self.cas_column,        drugbank.cas_number,   new_matches, element)
+            self.add_to_column(self.fda_column,        drugbank.fda_approval, new_matches, element)
+            self.add_to_column(self.indication_column, drugbank.indication,   new_matches, element)
+            self.add_to_column(self.mechanism_column,  drugbank.mechanism,    new_matches, element)
+            self.add_to_column(self.name_column,       drugbank.name,         new_matches, element)
+            self.add_to_column(self.price_column,      drugbank.prices,       new_matches, element)
+            self.add_to_column(self.smiles_column,     drugbank.smiles,       new_matches, element)
+            self.add_to_column(self.unii_column,       drugbank.unii,         new_matches, element)
+            # fmt: on
+
         self.drug_list[self.name_column] = self.drug_list[self.name_column].apply(self.unwrap_list)
 
     def make_main_name_col(self):
         if self.drug_list is None:
-            raise ValueError("drug-list is not defined. Call load-drug-queries before deduplicate.")
-            _hy_anon_var_20 = None
-        else:
-            _hy_anon_var_20 = None
+            raise ValueError("drug_list is not defined. Call load_drug_queries before make_main_name_col.")
         if "DrugBank:Main Name" not in self.drug_list.columns:
-            raise ValueError("DrugBank data does not exist yet. Run match-drugbank to create it.")
-            _hy_anon_var_21 = None
-        else:
-            _hy_anon_var_21 = None
+            raise ValueError("DrugBank data does not exist yet. Run match_drugbank to create it.")
+
         name_column = self.drug_list[self.name_column].notna()
         self.drug_list["Main Name"] = None
         self.drug_list.loc[-name_column, "Main Name"] = self.drug_list[self.name_col_name]
         self.drug_list.loc[name_column, "Main Name"] = self.drug_list[self.name_column]
         self.drug_list["Main Name"] = self.drug_list["Main Name"].str.lower()
+
         return print(f"MISSING NAMES: {self.drug_list['Main Name'].isna().sum()}")
 
     def deduplicate(self):
