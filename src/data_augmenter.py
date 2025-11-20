@@ -271,23 +271,23 @@ class DataAugmenter:
             self.add_to_column(self.unii_column,       drugbank.unii,         new_matches, element)
             # fmt: on
 
-        # match on name if there wasn't an id match
-        drugbank = DrugBank(filename, id_col, id_type_col, name_col)
-        for matches, element in drugbank.get_matches(match_type="name"):
-            new_matches = matches & -self.drug_list[self.match_found_column]
-            self.drug_list[self.match_found_column] |= new_matches
-
-            # fmt: off
-            self.add_to_column(self.all_names_column,  drugbank.all_names,    new_matches, element)
-            self.add_to_column(self.cas_column,        drugbank.cas_number,   new_matches, element)
-            self.add_to_column(self.fda_column,        drugbank.fda_approval, new_matches, element)
-            self.add_to_column(self.indication_column, drugbank.indication,   new_matches, element)
-            self.add_to_column(self.mechanism_column,  drugbank.mechanism,    new_matches, element)
-            self.add_to_column(self.name_column,       drugbank.name,         new_matches, element)
-            self.add_to_column(self.price_column,      drugbank.prices,       new_matches, element)
-            self.add_to_column(self.smiles_column,     drugbank.smiles,       new_matches, element)
-            self.add_to_column(self.unii_column,       drugbank.unii,         new_matches, element)
-            # fmt: on
+        # # match on name if there wasn't an id match
+        # drugbank = DrugBank(filename, id_col, id_type_col, name_col)
+        # for matches, element in drugbank.get_matches(match_type="name"):
+        #     new_matches = matches & -self.drug_list[self.match_found_column]
+        #     self.drug_list[self.match_found_column] |= new_matches
+        #
+        #     # fmt: off
+        #     self.add_to_column(self.all_names_column,  drugbank.all_names,    new_matches, element)
+        #     self.add_to_column(self.cas_column,        drugbank.cas_number,   new_matches, element)
+        #     self.add_to_column(self.fda_column,        drugbank.fda_approval, new_matches, element)
+        #     self.add_to_column(self.indication_column, drugbank.indication,   new_matches, element)
+        #     self.add_to_column(self.mechanism_column,  drugbank.mechanism,    new_matches, element)
+        #     self.add_to_column(self.name_column,       drugbank.name,         new_matches, element)
+        #     self.add_to_column(self.price_column,      drugbank.prices,       new_matches, element)
+        #     self.add_to_column(self.smiles_column,     drugbank.smiles,       new_matches, element)
+        #     self.add_to_column(self.unii_column,       drugbank.unii,         new_matches, element)
+        #     # fmt: on
 
         self.drug_list[self.name_column] = self.drug_list[self.name_column].apply(self.unwrap_list)
 
