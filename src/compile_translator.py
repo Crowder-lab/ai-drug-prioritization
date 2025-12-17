@@ -99,4 +99,4 @@ if __name__ == "__main__":
     drug_list = translator_results.get_drug_list()
     print_stats(drug_list)
     with open("data/translator_drugs.json", "w") as f:
-        drug_list.to_json(f, orient="records")
+        drug_list.to_json(f, orient="records", indent=2)
