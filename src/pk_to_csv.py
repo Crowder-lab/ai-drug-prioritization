@@ -1,8 +1,6 @@
-#!/usr/bin/env uv run
+#!/usr/bin/env -S uv run
 
 import json
-import re
-import sys
 from datetime import datetime
 
 import matplotlib.pyplot as plt
@@ -740,7 +738,9 @@ def save_file(all_rows, merged_json_data, search_term, identifier):
     # most_common_object_name = df["result_objectNode_name"].mode()[0]
 
     # CREATE NAME FROM INFO
-    filename = "{}_{}_{}_{}-{:02}-{:02}_{:02}:{:02}".format(search_term, identifier, pk_for_file, year, month, day, hour, minute)
+    filename = "{}_{}_{}_{}-{:02}-{:02}_{:02}:{:02}".format(
+        search_term, identifier, pk_for_file, year, month, day, hour, minute
+    )
     print(filename)  # Outputs: 'Year_Month_Day_Hour_Minute_Second'
 
     # RUN THE HISTOGRAM FUNCTION
@@ -780,37 +780,38 @@ url_dict = {
 
 if __name__ == "__main__":
     import re
-    import sys
 
     class ValueWrapper:
         def __init__(self, arg):
             self.value = arg
 
-    if len(sys.argv) != 2:
-        exit("Provide a translator link")
+    with open("data/translator/links.txt", "r") as f:
+        links = [s.strip() for s in f.readlines()]
 
-    translator_link = sys.argv[1]
     search_regex = r"\?l=(.*)&i"
     id_regex = r"&i=(.*)&t"
     pk_regex = r"&q=([a-z0-9\-]+)$"
+    for translator_link in links:
+        search_match = re.search(search_regex, translator_link)
+        if search_match is None:
+            print(f"Could not find search term from input.\nInput was:\n\t{translator_link}")
+            continue
+        search_term = search_match.groups()[0].replace("%20", " ")
 
-    search_match = re.search(search_regex, translator_link)
-    if search_match is None:
-        exit(f"Could not find search term from input.\nInput was:\n\t{translator_link}")
-    search_term = search_match.groups()[0].replace("%20", " ")
+        id_match = re.search(id_regex, translator_link)
+        if id_match is None:
+            print(f"Could not find indentifier from input.\nInput was:\n\t{translator_link}")
+            continue
+        identifier = id_match.groups()[0]
 
-    id_match = re.search(id_regex, translator_link)
-    if id_match is None:
-        exit(f"Could not find indentifier from input.\nInput was:\n\t{translator_link}")
-    identifier = id_match.groups()[0]
+        pk_match = re.search(pk_regex, translator_link)
+        if pk_match is None:
+            print(f"Could not find PK from input.\nInput was:\n\t{translator_link}")
+            continue
+        pk = pk_match.groups()[0]
 
-    pk_match = re.search(pk_regex, translator_link)
-    if pk_match is None:
-        exit(f"Could not find PK from input.\nInput was:\n\t{translator_link}")
-    pk = pk_match.groups()[0]
+        pk_input = ValueWrapper(pk)
+        env_input = ValueWrapper("prod")
+        attribute_check = ValueWrapper("DO NOT Download JSON")
 
-    pk_input = ValueWrapper(pk)
-    env_input = ValueWrapper("prod")
-    attribute_check = ValueWrapper("DO NOT Download JSON")
-
-    run_on_click(None, search_term, identifier)
+        run_on_click(None, search_term, identifier)
