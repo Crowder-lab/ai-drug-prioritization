@@ -1,5 +1,7 @@
-#!/usr/bin/env uv run
+#!/usr/bin/env -S uv run
+
 import json
+import os
 import re
 
 import pandas as pd
@@ -7,6 +9,19 @@ import pandas as pd
 
 def unwrap_list(x):
     return (x[0] if len(x) > 0 else None) if isinstance(x, list) else x
+
+
+def remove_newlines(df: pd.DataFrame) -> pd.DataFrame:
+    df_copy = df.copy()
+
+    # Select only object (string) columns
+    string_columns = df_copy.select_dtypes(include="object").columns
+
+    # Apply replacement: remove \n and \r
+    for col in string_columns:
+        df_copy[col] = df_copy[col].astype(str).str.replace(r"[\r\n]+", " ", regex=True)
+
+    return df_copy
 
 
 def is_safe(chatgpt_output):
@@ -19,24 +34,42 @@ def is_safe(chatgpt_output):
     )
 
 
-with open("data/pubchat/answers.json", "r") as f:
+with open(os.path.join("data", "pubchat", "answers.json"), "r") as f:
     answers = json.load(f)
-with open("data/drug_list.json", "r") as f:
-    initial_data = pd.read_json(f)
-with open("data/translator_drug_list.json", "r") as f:
-    translator_data = pd.read_json(f)
 
-translator_data["Clinician Recommendation"] = False
-translator_data["Screened"] = False
-initial_data["Data Source"] = "original"
-translator_data["Data Source"] = "translator"
+translator_file = os.path.join("data", "augmented_translator_drugs.json")
+extra_file = os.path.join("data", "augmented_extra_drugs.json")
+if os.path.exists(translator_file):
+    if os.path.exists(extra_file):
+        with open(extra_file, "r") as f:
+            initial_data = pd.read_json(f)
+        with open(translator_file, "r") as f:
+            translator_data = pd.read_json(f)
 
-same_cols = list(set.intersection(set(initial_data.columns), set(translator_data.columns)))
-data = pd.concat((initial_data[same_cols], translator_data[same_cols]), ignore_index=True)
+        initial_data["Data Source"] = "extra"
+        translator_data["Data Source"] = "translator"
+
+        same_cols = list(set.intersection(set(initial_data.columns), set(translator_data.columns)))
+        data = pd.concat((initial_data[same_cols], translator_data[same_cols]), ignore_index=True)
+    else:
+        with open(translator_file, "r") as f:
+            data = pd.read_json(f)
+        data["Data Source"] = "translator"
+else:
+    if os.path.exists(extra_file):
+        with open(extra_file, "r") as f:
+            data = pd.read_json(f)
+        data["Data Source"] = "extra"
+    else:
+        print(f"At least one of these files needs to exist to run:\n\t{translator_file}\n\t{extra_file}")
+        exit()
+
 
 data["Pediatric Safety"] = False
 for answer in answers:
-    data.loc[data["DrugBank:Main Name"] == answer["name"], "Pediatric Safety"] = is_safe(answer["answer"])
+    data.loc[data["DrugBank:Main Name"].str.lower() == answer["name"].lower(), "Pediatric Safety"] = is_safe(
+        answer["answer"]
+    )
 
 
 data["score"] = 0
@@ -48,7 +81,7 @@ data.loc[data["Drug Induced Liver Injury"] > 0.5, "score"] -= very_large_number
 data["score"] += data["DrugBank:FDA Approved"].apply(unwrap_list).fillna(False)
 
 
-def _hy_anon_var_6(l):
+def max_price(l):
     if isinstance(l, str):
         l = [l]
 
@@ -58,10 +91,29 @@ def _hy_anon_var_6(l):
     return max(tuple(map(lambda s: float(s.removesuffix("USD")), l)))
 
 
-data["Less than $500"] = data["DrugBank:Prices"].apply(_hy_anon_var_6) < 500
+data["Less than $500"] = data["DrugBank:Prices"].apply(max_price) < 500
 data["score"] += data["Less than $500"]
 data["score"] += data["Pediatric Safety"]
 data.sort_values(by="score", ascending=False, inplace=True)
 
-with open("data/ranked.csv", "w") as f:
+with open(os.path.join("data", "ranked.csv"), "w") as f:
+    ranked = remove_newlines(data)
     data.to_csv(f, index=False)
+
+with open(os.path.join("data", "threes.csv"), "w") as f:
+    threes = remove_newlines(data[data["score"] == 3])
+    threes[
+        [
+            "Main Name",
+            "DrugBank:Main Name",
+            "score",
+            "DrugBank:FDA Approved",
+            "Less than $500",
+            "Pediatric Safety",
+            "Blood Brain Barrier",
+            "P-glycoprotein Inhibition",
+            "Human Intestinal Absorption",
+            "Drug Induced Liver Injury",
+            "Data Source",
+        ]
+    ].to_csv(f, index=False)
