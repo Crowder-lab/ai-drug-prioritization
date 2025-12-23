@@ -96,6 +96,24 @@ data["score"] += data["Less than $500"]
 data["score"] += data["Pediatric Safety"]
 data.sort_values(by="score", ascending=False, inplace=True)
 
+# print out stats
+print(f"Total drugs:\t{len(data)}")
+print("")
+hia = data[data["Human Intestinal Absorption"] >= 0.5]
+print(f"Passes HIA:\t{len(hia)}")
+bbb = hia[(hia["Blood Brain Barrier"] >= 0.5) | (hia["P-glycoprotein Inhibition"] >= 0.5)]
+print(f"Passes BBB:\t{len(bbb)}")
+dili = bbb[bbb["Drug Induced Liver Injury"] < 0.5]
+print(f"Passes DILI:\t{len(dili)}")
+print("")
+fda = dili[dili["DrugBank:FDA Approved"].apply(unwrap_list).astype(bool)]
+print(f"FDA approved:\t{len(fda)}")
+lt500 = fda[fda["Less than $500"]]
+print(f"Less than $500:\t{len(lt500)}")
+safe = lt500[lt500["Pediatric Safety"]]
+print(f"Child safe:\t{len(safe)}")
+
+
 with open(os.path.join("data", "ranked.csv"), "w") as f:
     ranked = remove_newlines(data)
     data.to_csv(f, index=False)
