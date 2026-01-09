@@ -580,7 +580,7 @@ def make_histo(all_rows, calc_pdf_filename):
     )
 
     # Name of the PDF file
-    pdf_filename = "data/translator/" + calc_pdf_filename + ".pdf"
+    pdf_filename = os.path.join("data", "translator", calc_pdf_filename + ".pdf")
 
     # Create a PdfPages object
     with PdfPages(pdf_filename) as pdf:
@@ -741,7 +741,7 @@ def save_file(all_rows, merged_json_data, search_term, identifier):
     # CREATE NAME FROM INFO
     filename = "{}_{}_{}_{}-{:02}-{:02}_{:02}:{:02}".format(
         search_term, identifier, pk_for_file, year, month, day, hour, minute
-    )
+    ).replace(":", "-")
     print(filename)  # Outputs: 'Year_Month_Day_Hour_Minute_Second'
 
     # RUN THE HISTOGRAM FUNCTION
