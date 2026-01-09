@@ -25,7 +25,7 @@ class TranslatorData:
 
         dfs = []
         for file in files:
-            with open(folder + file, "r") as f:
+            with open(os.path.join(folder, file), "r") as f:
                 df = pd.read_csv(f, low_memory=False)
 
             df["search term"] = file.split("_")[0].lower()  # downloader names = query-name_other-stuff
