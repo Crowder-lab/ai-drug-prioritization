@@ -1,6 +1,7 @@
 #!/usr/bin/env -S uv run
 
 import json
+import os
 from datetime import datetime
 
 import matplotlib.pyplot as plt
@@ -746,7 +747,7 @@ def save_file(all_rows, merged_json_data, search_term, identifier):
     # RUN THE HISTOGRAM FUNCTION
     # make_histo(all_rows, filename)
     # Save the DataFrame to a CSV file with your filename
-    df.to_csv(f"data/translator/{filename}.csv", index=False)
+    df.to_csv(os.path.join("data", "translator", f"{filename}.csv"), index=False)
 
     del df
 
@@ -765,7 +766,7 @@ def save_json(data, name):
     json_string = json.dumps(data, indent=4)  # indent=4 for pretty formatting
 
     # Save the JSON string to a file
-    with open(f"data/translator/{name}.json", "w") as json_file:
+    with open(os.path.join("data", "translator", f"{name}.json"), "w") as json_file:
         json_file.write(json_string)
 
 
@@ -785,7 +786,7 @@ if __name__ == "__main__":
         def __init__(self, arg):
             self.value = arg
 
-    with open("data/translator/links.txt", "r") as f:
+    with open(os.path.join("data", "translator", "links.txt"), "r") as f:
         links = [s.strip() for s in f.readlines()]
 
     search_regex = r"\?l=(.*)&i"
